@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Copy "
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    helpPath="https://www.adobe.com/go/aem_cmp_list_v1">
+    <content
+        granite:class="core-wcm-list-v1"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <layout
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <general
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="general"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <headline
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Head Line Text"
+                                        name="./headLine"
+                                        removeSingleParagraphContainer="{Boolean}true"/>
+                                    <subheadline
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                        fieldLabel="Sub Headline Text"
+                                        name="./subHeadLine"
+                                        useFixedInlineToolbar="{Boolean}true">
+                                        <rtePlugins
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                        <uiSettings
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                    </subheadline>
+                                    <copy
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                        fieldLabel="Copy"
+                                        name="./copy"
+                                        removeSingleParagraphContainer="{Boolean}true"
+                                        useFixedInlineToolbar="{Boolean}true">
+                                        <uiSettings
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                        <rtePlugins
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                    </copy>
+                                    <copytwo
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                        fieldLabel="Copy Two"
+                                        name="./copyTwo"
+                                        removeSingleParagraphContainer="{Boolean}true"
+                                        useFixedInlineToolbar="{Boolean}true">
+                                        <rtePlugins
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                        <uiSettings
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                    </copytwo>
+                                    <ctabuttonplanetext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="CTA Button Plain Text"
+                                        name="./ctaButtonPlainText"/>
+                                    <ctabuttonhref
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldLabel="CTA Button Href"
+                                        name="./ctaButtonHref"
+                                        rootPath="/content"/>
+                                    <ctabuttontype
+                                        granite:id="ctaButtonForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="CTA Button Type"
+                                        name="./ctaButtonType">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <black_x0020_hollow
+                                                jcr:primaryType="nt:unstructured"
+                                                text="black hollow"
+                                                value="btn-black-hollow-on-white"/>
+                                            <green_x0020__x0020_hollow
+                                                jcr:primaryType="nt:unstructured"
+                                                text="green hollow"
+                                                value="btn-green-hollow"/>
+                                            <green_x0020_solid
+                                                jcr:primaryType="nt:unstructured"
+                                                text="green solid"
+                                                value="btn-green-solid"/>
+                                        </items>
+                                    </ctabuttontype>
+                                </items>
+                            </column>
+                        </items>
+                    </general>
+                </items>
+            </layout>
+        </items>
+    </content>
+</jcr:root>
+<sly data-sly-test="${wcmmode.edit}">
+   <center> Configure Copy Component</center>
+</sly>
+<sly data-sly-use.copymodel="com.tda.apac.core.models.CopyModel"/>
+<div class="copy default-component__wrapper">
+   <h2 class="copy__headline heading--primary">${copymodel.headLine @ context='html'}</h2>
+   <div class="copy__subheadline heading--tertiary">${copymodel.subHeadLine @ context='html'}</div>
+   <sly data-sly-test="${copymodel.copy}">
+      <div class="copy__body paragraph--main">
+         <sly data-sly-test="${copymodel.copyTwo }">
+            <div class="copy--two-col">
+               <div class="copy__col">
+                  ${copymodel.copy  @ context='html'}
+               </div>
+               <div class="copy__col">
+                  ${copymodel.copyTwo  @context ='html'}
+               </div>
+            </div>
+         </sly>
+         <sly data-sly-test="${!copymodel.copyTwo}">
+            ${copymodel.copy @context ='html'}
+         </sly>
+      </div>
+   </sly>
+   <sly data-sly-test="${copymodel.ctaButtonPlainText}">
+      <a title="${copymodel.ctaButtonPlainText}" href="${copymodel.getCtaButtonHref}" class="copy__cta btn ${copymodel.ctaButtonType}">
+           ${copymodel.ctaButtonPlainText}
+      </a>
+   </sly>
+</div>
