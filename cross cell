@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Cross Sell"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="apac.crosssell"
+    helpPath="https://www.adobe.com/go/aem_cmp_list_v1">
+    <content
+        granite:class="core-wcm-list-v1"
+        granite:id="crosssellDialog"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <layout
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <general
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <crossselltype
+                                        granite:id="crossSellTypeForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Cross Sell Type"
+                                        name="./crossSellType"
+                                        required="{Boolean}true">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <default
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Default"
+                                                value="default"/>
+                                            <contact
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Contact"
+                                                value="contact"/>
+                                        </items>
+                                    </crossselltype>
+                                   <crosssellcolorthemes
+                                        granite:id="colorThemeForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Cross Sell Color Themes"
+                                        name="./crossSellColorTheme"
+                                        required="{Boolean}true">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <navybackground
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Navy Background"
+                                                value="bg-navy"/>
+                                            <pinebackground
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Pine Background"
+                                                value="bg-pine"/>
+                                            <darkgreenbackground
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Dark Green Background"
+                                                value="bg-dark-green"/>
+                                            <coolgrey1background
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Cool Grey Background"
+                                                value="bg-light-grey"/>
+                                            <offwhitebackground
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Off White Background"
+                                                value="bg-off-white"/>
+                                        </items>
+                                    </crosssellcolorthemes>
+                                    <headlinefontcolor
+                                        granite:id="headlineColorForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Head Line Font Color"
+                                        name="./headLineColor"
+                                        required="{Boolean}true"/>
+                                    <headlineplaintext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Head Line Plain Text"
+                                        name="./headLinePlainText"
+                                        required="{Boolean}true"/>
+                                    <subheadlinefontcolor
+                                        granite:id="subHeadLineColorForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Sub Head Line Font Color"
+                                        name="./subHeadLineColor"/>
+                                    <subheadlineplaintext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Sub Head Line Plain Text"
+                                        name="./subHeadLinePlainText"/>
+                                    <paragraphtext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                        fieldLabel="Paragraph Text"
+                                        name="./paragraphText"
+                                        removeSingleParagraphContainer="{Boolean}true"
+                                        useFixedInlineToolbar="{Boolean}true">
+                                        <rtePlugins
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                        <uiSettings
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                    </paragraphtext>
+                                </items>
+                            </column>
+                        </items>
+                    </general>
+                    <default
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Default"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <disclosurelinkplaintext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Disclosure Link Plain Text"
+                                        name="./disclosureLinkPlainText"/>
+                                    <disclosurelinkhref
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                        fieldLabel="Disclosure Link Href"
+                                        name="./disclosureLinkHref"
+                                        rootPath="/content"/>
+                                    <disclosureurlnewwindow
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Target"
+                                        name="./disclosureUrlNewWindow"
+                                        value="false">
+                                        <items
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                    </disclosureurlnewwindow>
+                                    <ctabuttoncrosssellplaintext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="CTA Button Cross Sell Plain Text"
+                                        name="./ctaButtonPlainText"/>
+                                    <ctabuttoncrosssellalttext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="CTA Button Cross Sell Alt Text"
+                                        name="./ctaButtonAltText"/>
+                                    <ctabuttoncrosssellhref
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldLabel="CTA Button Cross Sell Href"
+                                        name="./ctaButtonHref"
+                                        rootPath="/content"/>
+                                    <ctaurlnewwindow
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Target"
+                                        name="./ctaUrlNewWindow"
+                                        value="false">
+                                        <items
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                    </ctaurlnewwindow>
+                                </items>
+                            </column>
+                        </items>
+                    </default>
+                    <contact
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Contact"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <ImageSource
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                        allowUpload="{Boolean}true"
+                                        autoStart="{Boolean}false"
+                                        class="cq-droptarget"
+                                        fieldLabel="ImageSource"
+                                        fileNameParameter="./fileName"
+                                        fileReferenceParameter="./imageSource"
+                                        mimeTypes="[image]"
+                                        multiple="{Boolean}false"
+                                        name="./file"
+                                        title="Upload Image Asset"
+                                        uploadUrl="${suffix.path}"
+                                        useHTML5="{Boolean}true"/>
+									<contactAltText
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Alt text for Contact variant"
+                                        name="./contactAltText"/>
+                                </items>
+                            </column>
+                        </items>
+                    </contact>
+                </items>
+            </layout>
+        </items>
+    </content>
+</jcr:root>
+ <sly data-sly-test="${wcmmode.edit}">
+    <center> Configure CrossSell Component</center>
+</sly>
+<sly data-sly-use.crosssell="com.tda.apac.core.models.CrossSellModel"/>
+<div class="cross-sell__wrapper full-bleed__wrapper ${crosssell.crossSellColorTheme}" data-dl-aem_component.id="${resource.name}" data-dl-section-topic="${crosssell.headLinePlainText}">
+	<div class="cross-sell-cta-variant-content__wrapper">
+	   <h2 class="heading--special-cross-sell ${crosssell.headLineColor}">
+		${crosssell.headLinePlainText}
+          <span class="cross-sell__subheadline ${crosssell.subHeadLineColor}">
+            ${crosssell.subHeadLinePlainText}
+          </span>
+          </h2> 
+          <sly data-sly-test="${crosssell.disclosureLinkPlainText}">
+        <div class="cross-sell-disclosure-link__wrapper">
+           <a href="${crosssell.getDisclosureLinkHref}" target="${crosssell.getDisclosureUrlNewWindow}" class="cross-sell-disclosure-link__a paragraph--small ${crosssell.crossSellColorTheme == 'bg-off-white' || crosssell.crossSellColorTheme == 'bg-light-grey' ? 'text-black' : 'text-white'}" 
+            data-dl-product="${crosssell.disclosureLinkPlainText}" data-dl-site_events="${crosssell.disclosureLinkPlainText}" data-dl-link.name="${crosssell.disclosureLinkPlainText}">
+            ${crosssell.disclosureLinkPlainText}
+           </a>
+        </div>
+      </sly>
+
+      <div class="cross-sell-cta-variant-paragraph__wrapper">
+      <div class="paragraph--main ${crosssell.crossSellColorTheme == 'bg-off-white' || crosssell.crossSellColorTheme == 'bg-light-grey' ? 'text-black' : 'text-white'}">
+         ${crosssell.paragraphText @ context='html'}
+	       </div>
+         </div>
+   </div>
+     <div class="${crosssell.crossSellType == 'default' ? 'cross-sell-cta-variant-cta__wrapper' : 'hs-cross-sell-contact-variant-contact__wrapper'}" data-dl-product="${properties.ctaButtonPlainText}">
+            <sly data-sly-test="${crosssell.ctaButtonPlainText}"> 
+                <a href="${crosssell.getCtaButtonHref}" target="${crosssell.getCtaUrlNewWindow}" class="btn cross-sell-cta__btn ${crosssell.crossSellColorTheme == 'bg-off-white' || crosssell.crossSellColorTheme == 'bg-light-grey' ? 'btn-black-hollow' : 'btn-white-hollow'}" data-dl-site_events="${crosssell.ctaButtonPlainText}" data-dl-link.name="${crosssell.ctaButtonPlainText}">
+                    ${crosssell.ctaButtonPlainText}
+                  </a>
+                  </sly>
+             <sly data-sly-test="${crosssell.crossSellType == 'contact'}"> 
+				<img class="hs-cross-sell-contact-qr__wrapper" src="${crosssell.imageSource}" alt="${properties.contactAltText ? properties.contactAltText : 'QR code for TD Ameritrade WeChat account' }"/>
+             </sly>
+         </div>
+</div>
