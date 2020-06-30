@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Alternate Content Large"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[tda.alternate-content,alt.disabled]"
+    helpPath="https://www.adobe.com/go/aem_cmp_list_v1">
+    <content
+        granite:class="core-wcm-list-v1"
+        granite:id="alternateContentDialog"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <layout
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <general
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="general"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <alternatecontenttype
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Alternate Content Type"
+                                        name="./alternateContentType">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <large
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Large"
+                                                value="large"/>
+                                            <medium
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Medium"
+                                                value="medium"/>
+                                            <small
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Small"
+                                                value="small"/>
+                                        </items>
+                                    </alternatecontenttype>
+                                    <Alignment
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                        fieldLabel="Alignment"
+                                        name="./alignment"
+                                        required="{Boolean}true"
+                                        vertical="{Boolean}false">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <option1
+                                                jcr:primaryType="nt:unstructured"
+                                                checked="{Boolean}true"
+                                                text="Image Left | Text Right"
+                                                value="right"/>
+                                            <option2
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Text Left | Image Right"
+                                                value="left"/>
+                                        </items>
+                                    </Alignment>
+                                    <accolorthemes
+                                        granite:id="colorThemeForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="AC Color Themes"
+                                        name="./acColorThemes"
+                                        required="{Boolean}true">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <pinebackground
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Pine Background"
+                                                value="bg-pine"/>
+                                            <navybackground
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Navy Background"
+                                                value="bg-navy"/>
+                                            <white-transparent-background
+                                                jcr:primaryType="nt:unstructured"
+                                                selected="{Boolean}true"
+                                                text="White (Transparent)  Background"
+                                                value="white"/>
+                                        </items>
+                                    </accolorthemes>
+                                    <imageaclargeImagesource
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                        allowUpload="{Boolean}true"
+                                        autoStart="{Boolean}false"
+                                        class="cq-droptarget"
+                                        fieldLabel="Image AC Large Image Source"
+                                        fileNameParameter="./fileName"
+                                        fileReferenceParameter="./imageAcLargeImageSource"
+                                        mimeTypes="[image]"
+                                        multiple="{Boolean}false"
+                                        name="./file"
+                                        required="{Boolean}true"
+                                        title="Upload Image Asset"
+                                        uploadUrl="${suffix.path}"
+                                        useHTML5="{Boolean}true"/>
+                                    <imageaclargeimagectype
+                                        granite:class="cq-dialog-radiogroup-showhide"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                        fieldLabel="Image AC Large Image Type"
+                                        name="./imageAcLargeImageType"
+                                        required="{Boolean}true"
+                                        vertical="{Boolean}false">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <option1
+                                                jcr:primaryType="nt:unstructured"
+                                                checked="{Boolean}true"
+                                                text="Non-decorative"
+                                                title="Non-decorative"
+                                                value="non-decorative"/>
+                                            <option2
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Decorative"
+                                                title="Decorative"
+                                                value="decorative"/>
+                                        </items>
+                                        <granite:data
+                                            jcr:primaryType="nt:unstructured"
+                                            cq-dialog-radiogroup-showhide="list-option-listfrom-showhide-target"/>
+                                    </imageaclargeimagectype>
+                                    <imageaclargealttext
+                                        granite:class="list-option-listfrom-showhide-target"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Image AC Large Alt Text"
+                                        name="./imageAcLargeAltText"
+                                        required="{Boolean}true"/>
+                                    <imageaclargemobileImage
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                        allowUpload="{Boolean}true"
+                                        autoStart="{Boolean}false"
+                                        class="cq-droptarget"
+                                        fieldLabel="Image AC Large Mobile Image"
+                                        fileNameParameter="./fileName"
+                                        fileReferenceParameter="./imageAcLargeMobileImage"
+                                        mimeTypes="[image]"
+                                        multiple="{Boolean}false"
+                                        name="./file"
+                                        title="Upload Image Asset"
+                                        uploadUrl="${suffix.path}"
+                                        useHTML5="{Boolean}true"/>
+                                    <headlinefontsize
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Headline Font Size"
+                                        name="./headLineFontSize"
+                                        required="{Boolean}true">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <heading1
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Primary Heading"
+                                                value="primary"/>
+                                            <heading2
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Secondary Heading"
+                                                value="secondary"/>
+                                        </items>
+                                    </headlinefontsize>
+                                    <headlinecolor
+                                        granite:id="headlineColorForm"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Headline Color"
+                                        name="./headLineColor"
+                                        required="{Boolean}true"/>
+                                    <headlinetext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                        fieldLabel="Headline Text"
+                                        name="./headLineText"
+                                        removeSingleParagraphContainer="{Boolean}true"
+                                        required="{Boolean}true"
+                                        useFixedInlineToolbar="{Boolean}true">
+                                        <uiSettings
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                        <rtePlugins
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                        <htmlRules jcr:primaryType="nt:unstructured">
+                                            <tableHandling
+                                                jcr:primaryType="nt:unstructured"
+                                                mergeTfootToTbody="{Boolean}true"
+                                                mergeTheadToTbody="{Boolean}false"/>
+                                        </htmlRules>
+                                    </headlinetext>
+                                    <paragraphtext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                        fieldLabel="Paragraph Text"
+                                        name="./paragraphText"
+                                        removeSingleParagraphContainer="{Boolean}true"
+                                        useFixedInlineToolbar="{Boolean}true">
+                                        <htmlRules jcr:primaryType="nt:unstructured">
+                                            <tableHandling
+                                                jcr:primaryType="nt:unstructured"
+                                                mergeTfootToTbody="{Boolean}true"
+                                                mergeTheadToTbody="{Boolean}false"/>
+                                        </htmlRules>
+                                        <uiSettings
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                        <rtePlugins
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                    </paragraphtext>
+                                    <ctabuttonhref
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldLabel="CTA Button Href"
+                                        name="./ctaButtonHref"
+                                        rootPath="/content"/>
+                                    <redirectwindow
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Target"
+                                        name="./ctaOpenWindow"
+                                        text="Target">
+                                        <items
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                    </redirectwindow>
+                                    <ctabuttonplanetext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="CTA Button Plain Text"
+                                        name="./ctaButtonPlaneText"/>
+                                    <linklist
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldDescription="Click + to add a link list"
+                                        fieldLabel="Link List"
+                                        name="./linklist">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./linklist">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <text
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                    fieldLabel="Text"
+                                                    name="./text"/>
+                                                <href
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                    fieldLabel="Href"
+                                                    name="./href"
+                                                    rootPath="/content"/>
+                                            </items>
+                                        </field>
+                                    </linklist>
+                                </items>
+                            </column>
+                        </items>
+                    </general>
+                </items>
+            </layout>
+        </items>
+    </content>
+</jcr:root>
+<sly data-sly-test="${wcmmode.edit}">
+    <center> Configure Alternate Content Component</center>
+</sly>
+<sly data-sly-use.alternate="com.tda.apac.core.models.AlternateContentLargeModel">
+</sly>
+<div class="alternating-content__wrapper" data-dl-aem_component.id="${resource.name}" data-dl-section-topic="Alternate Content ${alternate.alternateContentType}">
+	<div class="${alternate.acColorThemes != 'white' ? 'full-bleed__wrapper' : 'default-component__wrapper'}">
+		<div class="alternating-content module-${alternate.alignment @ context='styleToken'} ${alternate.acColorThemes !='white' ? (alternate.ImageAcLargeMobileImage !='' ? 'module--color-column alternating-content__has-mobile-image' : 'module--color-column') : ''}">
+			<div class="alternating-content__container module--${alternate.alternateContentType}">
+				${alternate.acColorImage @ context='unsafe'}
+				<div class="alternating-content__columns alternating-content__copy ${alternate.acColorThemes}">
+					<div class="alternating-content__copy-container">
+						<h2 class="heading--${alternate.headLineFontSize} ${alternate.headLineColor}">${alternate.headLineText @ context="html"}</h2>
+						<div class="alternating-content__description">
+							<div class="paragraph--main  ${alternate.acColorThemes != 'white' ? 'text-white' :'text-black'}">
+								${alternate.paragraphText @ context="html"}
+							</div>
+						  ${alternate.buttonTag @ context='unsafe'}
+							<div class="hs-alternating-content__links" data-sly-test="${alternate.acColorThemes == 'white'}">
+								<sly data-sly-list.alternateList="${alternate.getlistBeanArray}">
+									<a data-sly-test="${alternateList.getText}" class="arrow-link--black paragraph--main" href='${alternateList.getHref}' data-dl-product="${alternateList.getText}" data-dl-link.name="${alternateList.getText}">
+									${alternateList.getText}
+									</a>
+								</sly>
+                              </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
