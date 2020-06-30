@@ -1,0 +1,86 @@
+I18n:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+    jcr:mixinTypes="[rep:AccessControllable]"
+    jcr:primaryType="sling:Folder"/>
+    en.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:language="en"
+    jcr:mixinTypes="[mix:language]"
+    jcr:primaryType="sling:Folder">
+    <home
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Home"
+        sling:message="Home"/>
+</jcr:root>
+zh_cs.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:language="zh_cn"
+    jcr:mixinTypes="[mix:language]"
+    jcr:primaryType="sling:Folder">
+    <home
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Home"
+        sling:message="首页"/>
+</jcr:root>
+zh_tw.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:language="zh_tw"
+    jcr:mixinTypes="[mix:language]"
+    jcr:primaryType="sling:Folder">
+    <home
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Home"
+        sling:message="首頁"/>
+</jcr:root>
+context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:icon="breadcrumbNavigation"
+    jcr:description="Displays the position of the current page within the site hierarchy"
+    jcr:primaryType="cq:Component"
+    jcr:title="Breadcrumb (v2)"
+    sling:resourceSuperType="core/wcm/components/breadcrumb/v2/breadcrumb"
+	componentGroup=".hidden"/>
+ beadcrumb .html:
+ <script id="script-id" type="application/ld+json" >
+</script>
+<div class="breadcrumbs" data-dl-section-topic="breadcrumbs" 
+   data-dl-aem_component.id="${resource.name}" 
+   data-sly-use.breadcrumb="com.adobe.cq.wcm.core.components.models.Breadcrumb"
+   data-sly-use.template="core/wcm/components/commons/v1/templates.html">
+   <ul data-sly-list="${breadcrumb.items}">
+      <li class="breadcrumbs__item">
+         <sly data-sly-test.status="${!item.active}">
+            <a  class="paragraph--small breadcrumbs__link" href="${item.URL}">${itemList.first?'Home':item.title@i18n}</a>
+         </sly>
+         <sly data-sly-test="${item.active}">
+            <p class="paragraph--small text-cool-grey">${item.title}</p>
+         </sly>
+      </li>
+   </ul >
+</div>
+<sly data-sly-call="${template.placeholder @ isEmpty=breadcrumb.items.size == 0}"></sly>
+<sly data-sly-use.breadcrumbmodel="com.tda.apac.core.models.BreadCrumbModel" ></sly>
+<div id="script-url" type="application/ld+json" style="display:none;">
+	{
+	"@context": "https://schema.org",
+	"@type": "BreadcrumbList",
+	  "itemListElement": [
+		<div data-sly-list="${breadcrumb.items}" data-sly-unwrap>
+			{
+			"@type": "ListItem",
+			 "position": ${itemList.count},
+			 "name": "${itemList.first?'Home':item.title@i18n}",
+			 "item": "${breadcrumbmodel.getExternalLink}${item.URL}"
+			 }
+			 <sly data-sly-test.status="${!item.active}">,</sly>
+		 </div>
+			]
+	}
+</div>
+
+
