@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Footer"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    height="30rem"
+    width="50rem">
+    <content
+        granite:class="core-wcm-list-v1"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <layout
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <general
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <columns
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                                margin="{Boolean}true">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <column
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <footerlogo
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/accordion">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <basic
+                                                        jcr:primaryType="nt:unstructured"
+                                                        jcr:title="Footer Logo"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <logo
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                                                allowUpload="{Boolean}false"
+                                                                autoStart="{Boolean}false"
+                                                                class="cq-droptarget"
+                                                                fieldLabel="Logo"
+                                                                fileNameParameter="./fileName"
+                                                                fileReferenceParameter="./fileReference"
+                                                                mimeTypes="[image]"
+                                                                multiple="{Boolean}false"
+                                                                name="./file"
+                                                                title="Upload Image Asset"
+                                                                uploadUrl="${suffix.path}"
+                                                                useHTML5="{Boolean}true"/>
+                                                            <logourl
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                                fieldLabel="Logo URL"
+                                                                name="./logoUrl"
+                                                                rootPath="/content"/>
+                                                            <logolinkoptions
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                                fieldLabel="Target"
+                                                                name="./logoLinkOptions"
+                                                                text="Target">
+                                                                <items
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                            </logolinkoptions>
+                                                            <logotitle
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Logo Title"
+                                                                name="./logoTitle"/>
+                                                            <logoalttext
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Alt Text"
+                                                                name="./logoAltText"/>
+                                                        </items>
+                                                    </basic>
+                                                </items>
+                                            </footerlogo>
+                                            <footertagline
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/accordion">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <basic
+                                                        jcr:primaryType="nt:unstructured"
+                                                        jcr:title="Tagline"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <tagline
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                                                fieldLabel="Tagline Text"
+                                                                name="./taglineText"
+                                                                useFixedInlineToolbar="{Boolean}true">
+                                                                <rtePlugins
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceSuperType="/apps/retail/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/rtePlugins"/>
+                                                                <uiSettings
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceSuperType="/apps/retail/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/paragraphtext/uiSettings"/>
+                                                            </tagline>
+                                                        </items>
+                                                    </basic>
+                                                </items>
+                                            </footertagline>
+                                            <callus
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/accordion">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <basic
+                                                        jcr:primaryType="nt:unstructured"
+                                                        jcr:title="Call Us"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <calluslabel
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Call Us Label"
+                                                                name="./callUsLabel"/>
+                                                            <mobilenum
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Mobile Number"
+                                                                name="./mobileNum"/>
+                                                        </items>
+                                                    </basic>
+                                                </items>
+                                            </callus>
+                                            <sociallinks
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/accordion">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <basic
+                                                        jcr:primaryType="nt:unstructured"
+                                                        jcr:title="Social Links"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <products
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                                                composite="{Boolean}true"
+                                                                eaem-show-on-collapse="EAEM.showProductName">
+                                                                <field
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                                    name="./socialicons">
+                                                                    <items jcr:primaryType="nt:unstructured">
+                                                                        <column
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                                            <items jcr:primaryType="nt:unstructured">
+                                                                                <iconimage
+                                                                                    jcr:primaryType="nt:unstructured"
+                                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                                                    fieldLabel="Icon Image"
+                                                                                    name="./iconImage"
+                                                                                    rootPath="/content/dam/"/>
+                                                                                <linktext
+                                                                                    jcr:primaryType="nt:unstructured"
+                                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                                    fieldLabel="Icon Title"
+                                                                                    name="./socialLinkTitle"/>
+                                                                                <linkurl
+                                                                                    jcr:primaryType="nt:unstructured"
+                                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                                                    fieldLabel="Link Url"
+                                                                                    name="./socialLinkUrl"
+                                                                                    rootPath="/content/"/>
+                                                                                <networkname
+                                                                                    jcr:primaryType="nt:unstructured"
+                                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                                    fieldLabel="Social Network Name"
+                                                                                    name="./socialNetworkName"/>
+                                                                                <sociallinkoptions
+                                                                                    jcr:primaryType="nt:unstructured"
+                                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                                                    fieldLabel="Target"
+                                                                                    name="./logoLinkOptions"
+                                                                                    text="Target">
+                                                                                    <items
+                                                                                        jcr:primaryType="nt:unstructured"
+                                                                                        sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                                                </sociallinkoptions>
+                                                                            </items>
+                                                                        </column>
+                                                                    </items>
+                                                                </field>
+                                                            </products>
+                                                        </items>
+                                                    </basic>
+                                                </items>
+                                            </sociallinks>
+                                            <footerleftlogo
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/accordion">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <basic
+                                                        jcr:primaryType="nt:unstructured"
+                                                        jcr:title="Left Footer image"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <accoladesiconimagesource
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                                                allowUpload="{Boolean}false"
+                                                                autoStart="{Boolean}false"
+                                                                class="cq-droptarget"
+                                                                fieldLabel="Left Image"
+                                                                fileNameParameter="./fileName"
+                                                                fileReferenceParameter="./accoladesIconImageSource"
+                                                                mimeTypes="[image]"
+                                                                multiple="{Boolean}false"
+                                                                name="./file"
+                                                                title="Upload Image Asset"
+                                                                uploadUrl="${suffix.path}"
+                                                                useHTML5="{Boolean}true"/>
+                                                            <accoladesiconalttext
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Left Image Alt Text"
+                                                                name="./accoladesIconAltText"/>
+                                                            <accoladesheadlinetext
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Sub Image Heading"
+                                                                name="./accoladesHeadlineText"/>
+                                                            <accoladeslogoimagesource
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                                                allowUpload="{Boolean}false"
+                                                                autoStart="{Boolean}false"
+                                                                class="cq-droptarget"
+                                                                fieldLabel="Sub Left Image  "
+                                                                fileNameParameter="./fileName"
+                                                                fileReferenceParameter="./accoladesLogoImageSource"
+                                                                mimeTypes="[image]"
+                                                                multiple="{Boolean}false"
+                                                                name="./file"
+                                                                title="Upload Image Asset"
+                                                                uploadUrl="${suffix.path}"
+                                                                useHTML5="{Boolean}true"/>
+                                                            <accoladeslogoalttext
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                fieldLabel="Sub Left Image Alt Text"
+                                                                name="./accoladesLogoAltText"/>
+                                                        </items>
+                                                    </basic>
+                                                </items>
+                                            </footerleftlogo>
+                                        </items>
+                                    </column>
+                                </items>
+                            </columns>
+                        </items>
+                    </general>
+                    <column1
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Column 1"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <title
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Column Title"
+                                        name="./column1Title"/>
+                                    <products
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldLabel="Primary Nav Links">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./column1Links">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <text
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Link Title"
+                                                            name="./text"/>
+                                                        <href
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                            fieldLabel=" Link Url"
+                                                            name="./href"
+                                                            rootPath="/content"/>
+                                                        <linkevent
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Link Event"
+                                                            name="./linkEvent"/>
+                                                        <linkoptions
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            fieldLabel="Target"
+                                                            name="./logoLinkOptions"
+                                                            text="Target">
+                                                            <items
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                        </linkoptions>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </products>
+                                </items>
+                            </column>
+                        </items>
+                    </column1>
+                    <column2
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Column 2"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <title
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Column Title"
+                                        name="./column2Title"/>
+                                    <products
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldLabel="Primary Nav Links">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./column2Links">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <text
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Link Title"
+                                                            name="./text"/>
+                                                        <href
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                            fieldLabel=" Link Url"
+                                                            name="./href"
+                                                            rootPath="/content"/>
+                                                        <linkoptions
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            fieldLabel="Target"
+                                                            name="./logoLinkOptions"
+                                                            text="Target">
+                                                            <items
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                        </linkoptions>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </products>
+                                </items>
+                            </column>
+                        </items>
+                    </column2>
+                    <column3
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Column 3"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <title
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Column Title"
+                                        name="./column3Title"/>
+                                    <products
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldLabel="Primary Nav Links">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./column3Links">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <text
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Link Title"
+                                                            name="./text"/>
+                                                        <href
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                            fieldLabel=" Link Url"
+                                                            name="./href"
+                                                            rootPath="/content"/>
+                                                        <linkoptions
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            fieldLabel="Target"
+                                                            name="./logoLinkOptions"
+                                                            text="Target">
+                                                            <items
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                        </linkoptions>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </products>
+                                </items>
+                            </column>
+                        </items>
+                    </column3>
+                    <column4
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Column 4"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <title
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Column Title"
+                                        name="./column4Title"/>
+                                    <products
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldLabel="Primary Nav Links">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./column4Links">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <text
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Link Title"
+                                                            name="./text"/>
+                                                        <href
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                            fieldLabel=" Link Url"
+                                                            name="./href"
+                                                            rootPath="/content"/>
+                                                        <linkoptions
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            fieldLabel="Target"
+                                                            name="./logoLinkOptions"
+                                                            text="Target">
+                                                            <items
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                        </linkoptions>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </products>
+                                </items>
+                            </column>
+                        </items>
+                    </column4>
+                    <languages
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Languages"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <languagetitle
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Title"
+                                        name="./languageTitle"/>
+                                    <languageoption
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                        checked="{Boolean}false"
+                                        name="./footerLanguageOption"
+                                        text="Language Option? "
+                                        uncheckedValue="false"
+                                        value="true"/>
+                                </items>
+                            </column>
+                        </items>
+                    </languages>
+                    <secondarylinks
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Secondary Links"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <secondarylinks
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldLabel="Secondary Links">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./secondaryLinks">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <text
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldLabel="Link Title"
+                                                            name="./text"/>
+                                                        <href
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                            fieldLabel="Link Url"
+                                                            name="./href"
+                                                            rootPath="/content"/>
+                                                        <linkoptions
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            fieldLabel="Target"
+                                                            name="./logoLinkOptions"
+                                                            text="Target">
+                                                            <items
+                                                                jcr:primaryType="nt:unstructured"
+                                                                sling:resourceSuperType="/apps/apac/components/content/parent/cq:dialog/content/items/layout/items/general/items/column/items/redirectwindow/items"/>
+                                                        </linkoptions>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </secondarylinks>
+                                </items>
+                            </column>
+                        </items>
+                    </secondarylinks>
+					 <disclosurelist
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Disclosures"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <disclosureoption
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                        checked="{Boolean}false"
+                                        name="./disclosureOption"
+                                        text="Disclosure Option? "
+                                        uncheckedValue="false"
+                                        value="true"/>
+                                </items>
+                            </column>
+                        </items>
+                    </disclosurelist>
+                </items>
+            </layout>
+        </items>
+    </content>
+</jcr:root>
+footer.html:
+<sly data-sly-test="${wcmmode.edit}" >
+   <center> Configure Footer</center>
+</sly>
+<sly data-sly-use.footerComponent="com.tda.apac.core.models.FooterModel"/>
+<sly data-sly-use.footerMultiField="com.tda.apac.core.models.FooterMultiFieldModel"/>
+<footer class="main-footer" data-dl-aem_component.id="${resource.name}" data-dl-section-topic="footer" data-dl-link.location="footer">
+   <div class="main-footer-container">
+      <div class="main-footer-columns main-footer-head">
+         <div class="main-footer-head-columns">
+            ${footerComponent.getLogoAnchorTag @ context='html'}
+         </div>
+         <div class="main-footer-head-columns">
+            <div class="main-footer__tagline">
+               ${footerMultiField.getTaglineText @ context='html'}
+            </div>
+         </div>
+         <div class="main-footer-head-columns">
+            <p class="main-footer-contact-num"> ${footerComponent.getCallUsTag @ context='html'}</p>
+            <ul class="main-footer-social-items">
+               ${footerComponent.getSocialIcons @ context='unsafe'}
+            </ul>
+         </div>
+      </div>
+      <div class="main-footer-column-container">
+         <div class="accolades-language-link__wrapper">
+            <div class="accolade-language__wrapper">
+               <figure class="accolade__item">
+                  <span class="main-footer-sub-logo-container">
+                     <img class="main-footer-sub-logo-img" alt="${footerMultiField.accoladesIconAltText}" src-defer="${footerMultiField.accoladesIconImageSource}"
+                        src="${footerMultiField.accoladesIconImageSource}">
+                     <span class="main-footer-sub-logo-copy">
+                        <h3 class="main-footer-sub-logo-heading">${footerMultiField.accoladesHeadlineText}</h3>
+                        <img src-defer="${footerMultiField.accoladesLogoImageSource}" class="main-footer-sub-logo-sub-img" alt="${footerMultiField.accoladesLogoAltText}"
+                           src="${footerMultiField.accoladesLogoImageSource}">
+                     </span>
+                  </span>
+               </figure>
+               <nav class="footer-languages" data-dl-section-topic="languages" aria-label="Language: Site Language Selector">
+                  <sly data-sly-test="${footerMultiField.languageTitle && properties.footerLanguageOption}">
+                     <h4 class="footer-languages__title">${footerMultiField.languageTitle}</h4>
+                     <sly data-sly-resource="${@path='footerlanguagenavigation', resourceType='apac/components/structure/footerlanguagenavigation'}"></sly>
+                  </sly>
+               </nav>
+            </div>
+            <div class="footer-link__wrapper">
+               <div class="footer-link-columns__wrapper">
+                  <nav class="main-footer-nav-item" data-dl-section-topic="${footerMultiField.column1Title}">
+                     <sly data-sly-test="${footerMultiField.column1Title}">
+                        <h4 class="main-footer-nav-list-title">${footerMultiField.column1Title}</h4>
+                        <ul class="kiplinger-footer-links-list" data-sly-list="${footerMultiField.column1LinksList.listChildren}">
+                           <li class="inside-footer-list-item">
+                              <sly data-sly-use.params="${'footer.js' @ value=item.href, options=item.logoLinkOptions}">
+                                 <a class="main-footer-nav-link" href="${params.href @ context='uri'}" target="${params.target @ context='uri'}" title="${item.text}" 
+                                    data-dl-site_events="${item.linkEvent}" data-dl-link.name="${item.linkEvent ? item.text : ''}">${item.text}</a>
+                              </sly>
+                           </li>
+                        </ul>
+                     </sly>
+                  </nav>
+                  <nav class="main-footer-nav-item" data-dl-section-topic="${footerMultiField.column2Title}">
+                     <sly data-sly-test="${footerMultiField.column2Title}">
+                        <h4 class="main-footer-nav-list-title">${footerMultiField.column2Title}</h4>
+                        <ul class="kiplinger-footer-links-list" data-sly-list="${footerMultiField.column2LinksList.listChildren}">
+                           <li class="inside-footer-list-item">
+                              <sly data-sly-use.params="${'footer.js' @ value=item.href, options=item.logoLinkOptions}">
+                                 <a class="main-footer-nav-link" href="${params.href @ context='uri'}" target="${params.target @ context='uri'}" title="${item.text}">${item.text}</a>
+                              </sly>
+                           </li>
+                        </ul>
+                     </sly>
+                  </nav>
+                  <nav class="main-footer-nav-item" data-dl-section-topic="${footerMultiField.column3Title}">
+                     <sly data-sly-test="${footerMultiField.column3Title}">
+                        <h4 class="main-footer-nav-list-title">${footerMultiField.column3Title}</h4>
+                        <ul class="kiplinger-footer-links-list" data-sly-list="${footerMultiField.column3LinksList.listChildren}">
+                           <li class="inside-footer-list-item">
+                              <sly data-sly-use.params="${'footer.js' @ value=item.href, options=item.logoLinkOptions}">
+                                 <a class="main-footer-nav-link" href="${params.href @ context='uri'}" target="${params.target @ context='uri'}" title="${item.text}">${item.text}</a>
+                              </sly>
+                           </li>
+                        </ul>
+                     </sly>
+                  </nav>
+                  <nav class="main-footer-nav-item" data-dl-section-topic="${footerMultiField.column4Title}">
+                     <sly data-sly-test="${footerMultiField.column4Title}">
+                        <h4 class="main-footer-nav-list-title">${footerMultiField.column4Title}</h4>
+                        <ul class="kiplinger-footer-links-list" data-sly-list="${footerMultiField.column4LinksList.listChildren}">
+                           <li class="inside-footer-list-item">
+                              <sly data-sly-use.params="${'footer.js' @ value=item.href, options=item.logoLinkOptions}">
+                                 <a class="main-footer-nav-link" href="${params.href @ context='uri'}" target="${params.target @ context='uri'}" title="${item.text}">${item.text}</a>
+                              </sly>
+                           </li>
+                        </ul>
+                     </sly>
+                  </nav>
+               </div>
+               <div class="main-footer-columns main-footer-sub-nav" data-dl-section-topic="subnav">
+                  <div class="main-footer-sub-nav-wrapper">
+                     <ul class="main-footer-sub-nav-items" data-sly-list="${footerMultiField.secondaryLinks.listChildren}">
+                        <li>
+						 <sly data-sly-use.params="${'footer.js' @ value=item.href, options=item.logoLinkOptions}">
+                           <a target="${params.target @ context='uri'}" class="main-footer-sub-nav-item " href="${params.href @ context='uri'}" title="${item.text}">${item.text}</a>
+						 </sly>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+		    <div data-sly-test="${properties.disclosureOption}" class="main-footer-columns main-footer-copy" data-dl-section-topic="copy">
+				<sly data-sly-resource="${@path='disclosure-list', resourceType='apac/components/content/disclosure-list'}"></sly>
+		</div>
+      </div>
+   </div>
+</footer>
+footer.js;
+use(function () {
+    // you can reference the parameters via the this keyword.
+    var hrefValue = this.value;
+    var linkOptions = "_self";
+    console.log("options ::"+this.value);
+    if(this.options=="true"){
+       linkOptions = "_blank";
+    } else{
+        linkOptions = "_self";
+    }
+	if(hrefValue && hrefValue.indexOf("/content") != -1){
+        hrefValue = hrefValue.concat(".html");
+    }
+    return {
+        href : hrefValue,
+        target : linkOptions
+    };
+});
