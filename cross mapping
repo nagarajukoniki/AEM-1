@@ -1,0 +1,232 @@
+(function (document, $) {
+    'use strict';        
+
+    var headLineColor = "";
+    var subHeadLineColor = "";
+    var crossSellColorTheme = "";
+    var crossSellType = "";
+    var bgcolorsmapping = {};
+    $(document).on('dialog-ready', function(e) {
+        var url= $('#crosssellDialog').closest('form').attr('action');
+        url = url+".json";
+        if(url){
+            $.ajax({
+                url: url,
+                type: "GET",
+                async: false,
+            }).done(function( jsonResponse ) { 
+                if(jsonResponse){
+                    headLineColor = jsonResponse.headLineColor;
+                    subHeadLineColor = jsonResponse.subHeadLineColor;
+                    crossSellColorTheme = jsonResponse.crossSellColorTheme;
+                    crossSellType = jsonResponse.crossSellType;
+                }
+            }).fail(function( jqxhr, textStatus, error ) {
+                var err = textStatus + ", " + error;
+                console.log("Unable to retrieve crosssell dialog data...");
+            });
+        }
+        setTimeout(function(e){
+            if(crossSellType == ""){
+                crossSellType = $(".coral-Form-fieldwrapper").find('[name="./crossSellType"]').val();
+            }
+            prepareColorThemeDropdowns(crossSellType);
+        },1000);  
+
+
+
+    });
+
+    function prepareHeadlineDropdowns() {
+            var colorTheme = $(".coral-Form-fieldwrapper").find('[name="./crossSellColorTheme"]').val(); 
+            if (!_.isEmpty(colorTheme) ) { 
+                if(bgcolorsmapping){ 
+                    var headlineColorJson = [];
+                    for (var key in bgcolorsmapping) {
+                        if(colorTheme === bgcolorsmapping[key].bgcolorvalue){
+                            headlineColorJson = bgcolorsmapping[key].headlinecolor;
+                        }
+                    }
+                    var htmltags=$("#headlineColorForm coral-taglist").html();
+                    $("#headlineColorForm coral-select-item").empty();
+                    $("#headlineColorForm coral-select-item")
+                    .filter(function() {
+                        return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
+                    })
+                    .remove();                        
+                    var options = '';
+                    if(headLineColor && headLineColor != undefined){                            
+                        for (var key in headlineColorJson) {
+                            if(headLineColor === headlineColorJson[key].value){
+                                options += '<coral-select-item value="' + headlineColorJson[key].value + '" selected>' + headlineColorJson[key].name + '</coral-select-item>';
+                            }else{
+                                options += '<coral-select-item value="' + headlineColorJson[key].value + '" >' + headlineColorJson[key].name + '</coral-select-item>'; 
+                            }
+                        }
+                    }else{
+                        for (var key in headlineColorJson) {
+                            options += '<coral-select-item value="' + headlineColorJson[key].value + '" >' + headlineColorJson[key].name + '</coral-select-item>'; 
+                        }
+                    }
+
+
+                    $("#headlineColorForm").append(options);
+                    $("#headlineColorForm coral-taglist[name='./headLineColor']").html(htmltags);
+
+                    var subHeadLineColorJson = [];
+                    for (var key in bgcolorsmapping) {
+                        if(colorTheme === bgcolorsmapping[key].bgcolorvalue){
+                            subHeadLineColorJson = bgcolorsmapping[key].subheadlinecolor;
+                        }
+                    }
+                    var buttonhtmltags=$("#headlineColorForm coral-taglist").html();
+                    $("#subHeadLineColorForm coral-select-item").empty();
+                    $("#subHeadLineColorForm coral-select-item")
+                    .filter(function() {
+                        return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
+                    })
+                    .remove();                        
+                    var options = '';
+                    if(subHeadLineColor && subHeadLineColor != undefined){
+
+                        for (var key in subHeadLineColorJson) {
+                                if(subHeadLineColor === subHeadLineColorJson[key].value){
+                                options += '<coral-select-item value="' + subHeadLineColorJson[key].value + '" selected>' + subHeadLineColorJson[key].name + '</coral-select-item>';
+                            }else{
+                                options += '<coral-select-item value="' + subHeadLineColorJson[key].value + '" >' + subHeadLineColorJson[key].name + '</coral-select-item>'; 
+                            }
+                        }
+                    }else{
+                        for (var key in subHeadLineColorJson) {
+                            options += '<coral-select-item value="' + subHeadLineColorJson[key].value + '" >' + subHeadLineColorJson[key].name + '</coral-select-item>'; 
+                        }
+                    }                      
+                    $("#subHeadLineColorForm").append(options);
+                    $("#subHeadLineColorForm coral-taglist[name='./subHeadLineColor']").html(htmltags);
+                }                    
+
+            };                    
+    };       
+
+    $(document).on("change", "#colorThemeForm", function (e) {
+        var formText = $(this).attr("id");
+        if(formText === 'colorThemeForm'){
+            $(this).attr("disabled",true);
+            var colorTheme = $(".coral-Form-fieldwrapper").find('[name="./crossSellColorTheme"]').val();            
+            if (!_.isEmpty(colorTheme)) {    
+                var headlineColorJson = [];
+                for (var key in bgcolorsmapping) {
+                    if(colorTheme === bgcolorsmapping[key].bgcolorvalue){
+                        headlineColorJson = bgcolorsmapping[key].headlinecolor;
+                    }
+                }
+                if(headlineColorJson){
+                    $("#headlineColorForm coral-select-item").empty();
+                    $("#headlineColorForm coral-select-item")
+                    .filter(function() {
+                        return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
+                    })
+                    .remove();
+                    $("#headlineColorForm coral-tag")
+                    .filter(function() {
+                        return this.value;
+                    }).remove();
+                    var opt = '';
+                    for (var key in headlineColorJson) {
+                        opt += '<coral-select-item value="' + headlineColorJson[key].value + '" >' + headlineColorJson[key].name + '</coral-select-item>';
+                    }
+                    $("#headlineColorForm").append(opt);                          
+                }                    
+
+            };
+
+            if (!_.isEmpty(colorTheme)) {                
+                var subHeadLineColorJson = [];
+                for (var key in bgcolorsmapping) {
+                    if(colorTheme === bgcolorsmapping[key].bgcolorvalue){
+                        subHeadLineColorJson = bgcolorsmapping[key].subheadlinecolor;
+                    }
+                }
+                if(subHeadLineColorJson){
+                    $("#subHeadLineColorForm coral-select-item").empty();
+                    $("#subHeadLineColorForm coral-select-item")
+                    .filter(function() {
+                        return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
+                    })
+                    .remove();
+                    $("#subHeadLineColorForm coral-tag")
+                    .filter(function() {
+                        return this.value;
+                    }).remove();
+                    var opt = '';
+                    for (var key in subHeadLineColorJson) {
+                        opt += '<coral-select-item value="' + subHeadLineColorJson[key].value + '" >' + subHeadLineColorJson[key].name + '</coral-select-item>'; 
+                    }
+                    $("#subHeadLineColorForm").append(opt);                          
+                }                    
+
+            };
+            $(this).removeAttr("disabled");
+        }        
+    }); 
+
+    $(document).on("change", "#crossSellTypeForm", function (e) {
+        var crossSellType = $(".coral-Form-fieldwrapper").find('[name="./crossSellType"]').val();
+        headLineColor = "";
+        subHeadLineColor = "";
+        crossSellColorTheme = "";
+        prepareColorThemeDropdowns(crossSellType);        
+    });
+
+    function prepareColorThemeDropdowns(crossSellType) {
+		var url = "";
+        if(crossSellType == "contact"){
+            url = "/apps/apac/clientlibs/apac/json/crosssell_contact.json";
+        }else{
+            url = "/apps/apac/clientlibs/apac/json/crosssell_default.json";
+        }
+        $.ajax({
+            url: url,
+            type: "GET",
+            async: false,
+            
+        }).done(function( response ) { 
+            if(response && response.bgcolorsmapping){ 
+                bgcolorsmapping = response.bgcolorsmapping
+                if(bgcolorsmapping) {
+                    var htmltags=$("#colorThemeForm coral-taglist").html();
+                    $("#colorThemeForm coral-select-item").empty();
+                    $("#colorThemeForm coral-select-item")
+                    .filter(function() {
+                        return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
+                    })
+                    .remove();                        
+                    var options = '';
+                    if(crossSellColorTheme && crossSellColorTheme != undefined){                            
+                        for (var key in bgcolorsmapping) {
+                            if(crossSellColorTheme === bgcolorsmapping[key].bgcolorvalue){
+                                options += '<coral-select-item value="' + bgcolorsmapping[key].bgcolorvalue + '" selected>' + bgcolorsmapping[key].bgcolorname + '</coral-select-item>';
+                            }else{
+                                options += '<coral-select-item value="' + bgcolorsmapping[key].bgcolorvalue + '" >' + bgcolorsmapping[key].bgcolorname + '</coral-select-item>'; 
+                            }
+                        }
+                    }else{
+                        for (var key in bgcolorsmapping) {
+                            options += '<coral-select-item value="' + bgcolorsmapping[key].bgcolorvalue + '" >' + bgcolorsmapping[key].bgcolorname + '</coral-select-item>'; 
+                        }
+                    }
+                    $("#colorThemeForm").append(options);
+                    $("#colorThemeForm coral-taglist[name='./crossSellColorTheme']").html(htmltags);
+                    setTimeout(function(e){
+                    	prepareHeadlineDropdowns();
+                    },1000);
+                }
+            }
+        }).fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            console.log("Unable to retrieve crosssell json data..");
+        });
+
+    }
+    
+})(document, Granite.$);
