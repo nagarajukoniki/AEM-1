@@ -1,0 +1,22 @@
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Language Navigation"
+    sling:resourceSuperType="core/wcm/components/languagenavigation/v1/languagenavigation"
+    componentGroup=".hidden"/>
+    languagenav.html:
+    <sly data-sly-test="${wcmmode.edit}"><center>Configure Language Navigation</center></sly>
+
+<sly data-sly-use.languageNavigation="com.adobe.cq.wcm.core.components.models.LanguageNavigation"/>
+
+<button class="hk-language__button" aria-controls="language-options" aria-expanded="false" data-sly-list.languageItem="${languageNavigation.items}">
+    <sly data-sly-test="${languageItem.active}">
+          ${languageItem.title}
+	</sly>
+</button>                                        
+<ul id="language-options" class="hk-language__options" data-sly-list.languageItem="${languageNavigation.items}" aria-hidden="true">
+	<li data-language="${languageItem.title}" class="${languageItem.active ? 'active' : ''}"  >
+		<a href="${languageItem.URL}">${languageItem.title}</a>
+	</li>
+</ul>
