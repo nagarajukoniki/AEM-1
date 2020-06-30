@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Accordion"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/tabs">
+        <items jcr:primaryType="nt:unstructured">
+            <general
+                jcr:primaryType="nt:unstructured"
+                jcr:title="General"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                    margin="{Boolean}false"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <column
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <header
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldDescription="Header"
+                                fieldLabel="Header"
+                                name="./header"/>
+                            <subheader
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Sub header"
+                                name="./subheader"/>
+                            <multifieldcollection
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                composite="{Boolean}true"
+                                fieldDescription="Click + to add a accordion"
+                                fieldLabel="Accordion"
+                                name="./multiCol">
+                                <field
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container"
+                                    name="./faqlist">
+                                    <items jcr:primaryType="nt:unstructured">
+                                        <header
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                            fieldLabel="Accordion Item Header"
+                                            name="./itemheader"/>
+                                        <content
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceSuperType="/apps/common/components/content/tda_rich_text_editor/cq:dialog/content/items/container/items/text/items/column/items/text"
+                                            sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                            fieldLabel="Accordion Item Content"
+                                            name="./itemcontent"
+                                            useFixedInlineToolbar="{Boolean}true"/>
+                                        <ctabuttontext
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                            fieldLabel="CTA Button Text"
+                                            name="./ctabuttontext"/>
+                                        <ctalink
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                            fieldLabel="CTA Link"
+                                            name="./ctalink"
+                                            rootPath="/content"/>
+                                        <ctabuttonstyle
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                            fieldLabel="CTA Button Style"
+                                            name="./ctabuttonstyle">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <blackhollow
+                                                    jcr:primaryType="nt:unstructured"
+                                                    text="black hollow"
+                                                    value="btn-black-hollow-on-white"/>
+                                                <greenhollow
+                                                    jcr:primaryType="nt:unstructured"
+                                                    text="green hollow"
+                                                    value="btn-green-hollow"/>
+                                                <green_x0020_solid
+                                                    jcr:primaryType="nt:unstructured"
+                                                    text="green solid"
+                                                    value="btn-green-solid"/>
+                                            </items>
+                                        </ctabuttonstyle>
+                                        <linklist
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                            composite="{Boolean}true"
+                                            fieldDescription="Click + to add a link list"
+                                            fieldLabel="Link List"
+                                            name="./linklist">
+                                            <field
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                name="./linklist">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <text
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                        fieldLabel="Text"
+                                                        name="./text"/>
+                                                    <href
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                        fieldLabel="Href"
+                                                        name="./href"
+                                                        rootPath="/content"/>
+                                                </items>
+                                            </field>
+                                        </linklist>
+                                    </items>
+                                </field>
+                            </multifieldcollection>
+                        </items>
+                    </column>
+                </items>
+            </general>
+        </items>
+    </content>
+</jcr:root>
+<sly data-sly-use.faq="com.tda.apac.core.models.AccordionModel" /> <div data-sly-test='${wcmmode.edit}' data-sly-unwrap>
+<center>Configure Accordion</center>
+</div>
+<div class="accordion default-component__wrapper">
+	<div class="accordion__container">
+		<div class="accordion__header" >
+			<h2 class="heading--primary">
+			${properties.header}
+			</h2>
+			<p class="paragraph--main">
+			${properties.subheader}
+			</p>
+		</div>
+		<!--- accordion body -->
+		<div class="accordion__body full-bleed__wrapper--mobile-only" data-js-component="accordion">
+			<sly data-sly-list.faqList="${faq.getaccordionBeanArray}">
+				<div class="accordion__item">
+					<h3 class="heading--secondary js--accordion_trigger">
+					${faqList.getItemHeader @ context='html'}
+					<button class="accordion__item-button"
+					aria-controls=${faqList.getContentid} aria-expanded="false" aria-label="toggle button"></button>
+					</h3>
+					<div class="accordion__item-contents paragraph--main"
+					id=${faqList.getContentid} aria-hidden="true">
+						${faqList.getItemContent @ context='html'}
+						<!-- {{#if cta-button-text}} -->
+						<a title="Learn More" href=${faqList.getCtalink} class="accordion__cta btn ${faqList.getCtabuttonstyle}" data-sly-test="${faqList.ctabuttontext}">
+						${faqList.getCtabuttontext}
+						</a>
+						<sly data-sly-test="${faqList.isHasLinkLists}">
+                       		<sly data-sly-list.faqList="${faqList.getAccordionBean}">
+								<a data-sly-test="${faqList.getText}" class="paragraph--main arrow-link--black" href='${faqList.getHref}'>
+								${faqList.getText}
+								</a>
+							</sly>
+						</sly>
+					</div>
+				</div>
+			</sly>
+		</div>
+	<!--- accordion body -->
+	</div>
+</div>
