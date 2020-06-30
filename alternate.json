@@ -1,0 +1,42 @@
+{
+  "bgcolorsmapping": [
+    {
+      "bgcolorname": "White Background",
+      "bgcolorvalue": "white",
+      "headlinecolor": [
+        {
+          "name": "Black Text",
+          "value": "text-black"
+        }
+      ]
+    },    
+    {
+      "bgcolorname": "Pine Background",
+      "bgcolorvalue": "bg-pine",
+      "headlinecolor": [
+        {
+          "name": "White Text",
+          "value": "text-white"
+        },
+		{
+          "name": "Daisy Text",
+          "value": "text-daisy"
+        }
+      ]
+    },
+    {
+      "bgcolorname": "Navy Background",
+      "bgcolorvalue": "bg-navy",
+      "headlinecolor": [
+        {
+          "name": "White Text",
+          "value": "text-white"
+        },
+		{
+          "name": "Sky Text",
+          "value": "text-sky"
+        }
+      ]
+    }
+  ]
+}
