@@ -1,0 +1,76 @@
+cq_dialog content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Scheduler component"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <layout
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+            margin="{Boolean}false"/>
+        <items jcr:primaryType="nt:unstructured">
+            <column
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/container">
+                <items jcr:primaryType="nt:unstructured">
+                    <deploytype
+                        granite:class="cq-dialog-dropdown-showhide"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                        fieldDescription="Immediate Deploy ?"
+                        fieldLabel="Immediate Deploy ?"
+                        name="./deploytype">
+                        <items jcr:primaryType="nt:unstructured">
+                            <option1
+                                jcr:primaryType="nt:unstructured"
+                                text="Yes"
+                                value="yes"/>
+                            <option2
+                                jcr:primaryType="nt:unstructured"
+                                text="No"
+                                value="no"/>
+                        </items>
+                        <granite:data
+                            jcr:primaryType="nt:unstructured"
+                            cq-dialog-dropdown-showhide-target=".showhidetargets"/>
+                    </deploytype>
+                    <targetscheduleddate
+                        granite:class="showhidetargets"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <scheduledate
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+                                displayedFormat="YYYY:MM:DD HH:mm"
+                                fieldLabel="Schedule Publish Date"
+                                name="./schedulepublishdate"
+                                type="datetime"/>
+                        </items>
+                        <granite:data
+                            jcr:primaryType="nt:unstructured"
+                            showhidetargetvalue="no"/>
+                    </targetscheduleddate>
+                </items>
+            </column>
+        </items>
+    </content>
+</jcr:root>
+.content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="Multiset of title collapsible descriptions used for implementing accordion-style FAQs."
+    jcr:primaryType="cq:Component"
+    jcr:title="Scheduler Component"
+    componentGroup="apac"/>
+    dialog.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Dialog"
+    title="Multi Field"
+    xtype="dialog"/>
+    schdulr.html:
+    Deploy content :: ${properties.deploy}
