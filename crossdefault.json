@@ -1,0 +1,132 @@
+{
+  "bgcolorsmapping": [
+    {
+      "bgcolorname": "Navy Background",
+      "bgcolorvalue": "bg-navy",
+      "headlinecolor": [
+        {
+          "name": "White Text",
+          "value": "text-white"
+        },
+        {
+          "name": "Sky Text",
+          "value": "text-sky"
+        }
+      ],
+      "subheadlinecolor": [
+
+		{
+          "name": "Sky Text",
+          "value": "text-sky"
+        },
+		{
+          "name": "White Text",
+          "value": "text-white"
+        }
+      ]
+    },
+    {
+      "bgcolorname": "Pine Background",
+      "bgcolorvalue": "bg-pine",
+      "headlinecolor": [
+        {
+          "name": "White Text",
+          "value": "text-white"
+        },
+        {
+          "name": "Daisy Text ",
+          "value": "text-daisy"
+        }  
+      ],
+      "subheadlinecolor": [
+
+        {
+          "name": " White Text",
+          "value": "text-white"
+        },
+        {
+          "name": "Daisy Text ",
+          "value": "text-daisy"
+        }
+      ]
+    }  ,
+    {
+      "bgcolorname": "Dark Green Background",
+      "bgcolorvalue": "bg-dark-green",
+      "headlinecolor": [
+        {
+          "name": "White Text",
+          "value": "text-white"
+        },
+        {
+          "name": "Core Green Text",
+          "value": "text-core-green"
+       }
+      ],
+      "subheadlinecolor": [
+
+        {
+          "name": " White Text",
+          "value": "text-white"
+        },
+        {
+          "name": "Core Green Text",
+          "value": "text-core-green"
+        }
+      ]
+    },
+    {
+      "bgcolorname": "Cool Grey Background",
+      "bgcolorvalue": "bg-light-grey",
+      "headlinecolor": [
+
+        {
+          "name": "Utility-green Text",
+          "value": "text-utility-green"
+        },
+		{
+		  "name": "Black Text",
+		  "value": "text-black"
+		}
+
+      ],
+      "subheadlinecolor": [
+        {
+          "name": "Black Text",
+          "value": "text-black"
+        },
+		{
+          "name": "Utility-green Text",
+          "value": "text-utility-green"
+        }
+
+      ]
+    },
+    {
+      "bgcolorname": "Off White Background",
+      "bgcolorvalue": "bg-off-white",
+      "headlinecolor": [
+        {
+          "name": "Pine Text",
+          "value": "text-pine"
+        },
+        {
+          "name": "Black Text",
+          "value": "text-black"
+        }
+
+      ],
+      "subheadlinecolor": [
+        {
+          "name": "Black Text",
+          "value": "text-black"
+        },
+        {
+          "name": "Pine Text",
+          "value": "text-pine"
+       }
+      ]
+    }  
+
+  ]
+}
