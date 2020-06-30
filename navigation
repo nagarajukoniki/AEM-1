@@ -1,0 +1,99 @@
+i18n:
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+    jcr:mixinTypes="[rep:AccessControllable]"
+    jcr:primaryType="sling:Folder"/>
+    en.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:language="en"
+    jcr:mixinTypes="[mix:language]"
+    jcr:primaryType="sling:Folder">
+    <overview
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Overview"
+        sling:message="Overview"/>
+</jcr:root>
+zh_cn.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:language="zh_cn"
+    jcr:mixinTypes="[mix:language]"
+    jcr:primaryType="sling:Folder">
+    <overview
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Overview"
+        sling:message="概览"/>
+</jcr:root>
+zh_tw.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:language="zh_tw"
+    jcr:mixinTypes="[mix:language]"
+    jcr:primaryType="sling:Folder">
+    <overview
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Overview"
+        sling:message="概覽"/>
+</jcr:root>
+nav context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Navigation"
+    sling:resourceSuperType="core/wcm/components/navigation/v1/navigation"/>
+    group.html:
+    <template data-sly-template.group="${@ items='The navigation items for the current level'}" data-sly-use.itemTemplate="item.html">
+    <sly data-sly-list="${items}">
+        <sly data-sly-call="${itemTemplate.item @ item=item}"></sly>
+    </sly>
+</template>
+
+<template data-sly-template.childgroup="${@ items='The navigation items for the second level'}" data-sly-use.itemTemplate="item.html">
+    <sly data-sly-list="${items}">
+        <sly data-sly-call="${itemTemplate.childitem @ item=item}"></sly>
+    </sly>
+</template>
+Item.html:
+<template data-sly-template.item="${@ item='The navigation item'}" data-sly-use.groupTemplate="group.html" data-sly-use.itemContentTemplate="itemContent.html">
+    <li class="main-header-nav-item expandable">
+        <sly data-sly-call="${itemContentTemplate.itemContent @ item = item}"></sly>
+      <ul class="main-header-nav-items-secondary" >
+        <sly data-sly-call="${itemContentTemplate.itemContentSelf @ item = item}"></sly>
+        <sly data-sly-test="${item.children.size > 0}" data-sly-call="${groupTemplate.childgroup @ items = item.children}"></sly>
+      </ul>
+    </li>
+
+</template>
+<template data-sly-template.childitem="${@ item='The navigation child item'}" data-sly-use.groupTemplate="group.html" data-sly-use.itemContentTemplate="itemContent.html">
+    <li class="main-header-nav-item-secondary">
+        <sly data-sly-call="${itemContentTemplate.itemContentSecondary @ item = item}"></sly>
+        <sly data-sly-test="${item.children.size > 0}" data-sly-call="${groupTemplate.childgroup @ items = item.children}"></sly>
+    </li>
+</template>
+itemContent.html:
+<template data-sly-template.itemContent="${@ item='The navigation item'}">
+     <a target="_parent" href="${item.URL}" title="${item.title}">${item.title}</a>
+</template>
+
+<template data-sly-template.itemContentSecondary="${@ item='The navigation item'}">
+    <a class="execute"  href="${item.URL}">${item.title}</a>
+</template>
+
+<template data-sly-template.itemContentSelf="${@ item='The navigation item'}">
+      <li class="main-header-nav-item-secondary"> 
+      <a class="execute"  href="${item.URL}">${item.title} ${'Overview'@i18n}</a>
+      </li>
+</template>
+navigation.html:
+<sly
+     data-sly-use.template="core/wcm/components/commons/v1/templates.html"
+     data-sly-use.navigation="com.adobe.cq.wcm.core.components.models.Navigation"
+     data-sly-test.hasContent="${navigation.items.size > 0}"
+     data-sly-use.groupTemplate="group.html"
+     data-sly-call="${groupTemplate.group @ items=navigation.items}"
+     aria-label="${navigation.accessibilityLabel}">
+</sly>
+<sly data-sly-call="${template.placeholder @ isEmpty=!hasContent, classAppend='cmp-navigation'}"></sly>
+    
