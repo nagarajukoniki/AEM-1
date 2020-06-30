@@ -1,0 +1,25 @@
+<sly data-sly-test="${wcmmode.edit}">
+   <center>Configure Language Navigation</center>
+</sly>
+<sly data-sly-use.languageNavigation="com.adobe.cq.wcm.core.components.models.LanguageNavigation"/>
+<ul class="footer-languages__list">
+   <sly data-sly-list.languageItem="${languageNavigation.items}">
+      <sly data-sly-test.status="${languageItem.active}">
+         <li class="footer-languages__list-item">
+            <a class="main-footer-nav-link language-selector active"   title="${languageItem.title}" data-lang="${languageItem.language}">${languageItem.title}<span class="lang-icon-checkmark"></span></a>
+         </li>
+      </sly>
+      <sly data-sly-test="${!status}">
+         <li class="footer-languages__list-item">
+            <a class="main-footer-nav-link language-selector" href="${languageItem.URL}" target="_parent" title="${languageItem.title}" data-lang="${languageItem.language} ">${languageItem.title}</a>
+         </li>
+      </sly>
+   </sly>
+</ul>
+context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Language Navigation"
+    sling:resourceSuperType="core/wcm/components/languagenavigation/v1/languagenavigation"
+    componentGroup=".hidden"/>
