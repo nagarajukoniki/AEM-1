@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Left Navigation"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <properties
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Properties"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <navigationStructureDepth
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+                                fieldDescription="The depth of the navigation structure, relative to the navigation root."
+                                fieldLabel="Navigation Structure Depth"
+                                max="6"
+                                min="1"
+                                name="./navigationStructureDepth"
+                                step="1"
+                                value="1"/>
+                        </items>
+                    </properties>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+<sly data-sly-test="${wcmmode.edit && currentStyle.navigationStructureDepth}">
+   <center> Configure LeftNav Component</center>
+</sly>
+<sly data-sly-use.leftNav="com.tda.apac.core.models.LeftNavModel"/>
+<div class="page-left-rail">
+   <nav aria-label="left-nav" data-dl-aem_component.id="${resource.name}" data-dl-section-topic="left nav" data-dl-link.location="left nav">
+      <sly  data-sly-test.next="${leftNav.rootPage.listChildren.hasNext}">
+         <ul  class="left-nav__wrapper" data-sly-list="${leftNav.rootPage.listChildren}">
+            <li class="left-nav-item__wrapper" data-sly-test="${!item.hideInNav}">
+               <div id="${['i',itemList.count,'-surface'] @ join=''}" class="left-nav-surface-level__wrapper left-nav-surface-level-group__wrapper ">
+                  <a id="${['i',itemList.count,'-link'] @ join=''}" class="left-nav__link paragraph--main ${currentPage.path ==item.path? 'left-nav-active__link' : '' }" href="${item.getPath}.html" aria-expanded="false">      
+                  ${item.title @ context='html'} 
+                  </a> 
+                  <sly data-sly-test.next=" ${item.listChildren.hasNext}">
+                     <button id="${['i',itemList.count] @ join=''}" class="left-nav-chevron__button" aria-expanded="false" aria-label="Small Business group">
+                        <div id="${['i',itemList.count,'-icon'] @ join=''}" class="left-nav-chevron__wrapper left-nav-chevron-closed__img">
+                           <svg class="left-nav-chevron__img" xmlns="http://www.w3.org/2000/svg" width="6.811" height="12.121" viewBox="0 0 6.811 12.121">
+                              <defs>
+                                 <style>
+                                    .a{fill:none;stroke:#666;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:1.5px;}
+                                 </style>
+                              </defs>
+                              <path class="a" d="M0,10,5,5,0,0" transform="translate(1.061 1.061)"/>
+                           </svg>
+                        </div>
+                     </button>
+                  </sly>
+               </div>
+               <sly  data-sly-test.next=" ${item.listChildren.hasNext}">
+                  <sly data-sly-call="${descendant @ page=item,id=itemList.count}" />
+               </sly>
+            </li>
+         </ul>
+      </sly>
+   </nav>
+</div>
+<template data-sly-template.descendant="${@ page,id}">
+   <ul id="${['i',id,'-nested'] @ join=''}" class="left-nav-group-closed__wrapper" data-sly-list.nextPage=${page.listChildren}>
+      <li class="left-nav-group-item__wrapper left-nav-group-item-first-level__wrapper" data-sly-test="${!nextPage.hideInNav}" >
+         <a class="paragraph--main left-nav__link ${currentPage.path == nextPage.Path ? 'left-nav-active__link' : '' }" href="${nextPage.getPath}.html" data-dl-product="${nextPage.title}" data-dl-link.name="${nextPage.title}">
+         ${nextPage.title}
+         </a>
+         <sly  data-sly-test.next="${nextPage.listChildren.hasNext}">
+            <sly data-sly-call="${descendants @ page=nextPage}" />
+         </sly>
+      </li>
+   </ul>
+</template>
+<template data-sly-template.descendants="${@ page}">
+   <ul class="left-nav-group-item-second-level__wrapper" data-sly-list.nextPage=${page.listChildren}>
+      <li class="left-nav-group-item__wrapper"  data-sly-test="${!nextPage.hideInNav}"> 
+         <a class="paragraph--med left-nav__link ${currentPage.path == nextPage.Path ? 'left-nav-active__link' : '' }" href="${nextPage.getPath}.html" data-dl-product="${nextPage.title}" data-dl-link.name="${nextPage.title}">
+         ${nextPage.title} 
+         </a>
+      </li>
+   </ul>
+</template>
