@@ -1,0 +1,528 @@
+dia-context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Page"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[cq.common.wcm,cq.siteadmin.admin.properties]"
+    mode="edit">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/foundation/container"
+        class="cq-dialog-content-page">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/foundation/container"
+                rel="cq-siteadmin-admin-properties-tabs">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/foundation/layouts/tabs"
+                    type="nav"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <basic
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Basic"
+                        sling:resourceType="granite/ui/components/foundation/section">
+                        <layout
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/foundation/layouts/fixedcolumns"
+                            margin="{Boolean}false"/>
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <title
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="Title and Tags"
+                                        sling:resourceType="granite/ui/components/foundation/form/fieldset">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <pagename
+                                                cq:hideOnEdit="{Boolean}true"
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                                fieldLabel="Name"
+                                                name="pageName"
+                                                validation="admin.pagename"/>
+                                            <title
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                cq-msm-lockable="jcr:title"
+                                                fieldLabel="Title"
+                                                name="./jcr:title"
+                                                renderReadOnly="{Boolean}true"
+                                                required="{Boolean}true"/>
+                                            <msmConfigEndpoint
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/hidden"
+                                                class="msm-config-endpoint"
+                                                value="${empty param.item ? requestPathInfo.suffix : param.item }"/>
+                                            <tags
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="cq/gui/components/common/tagspicker"
+                                                allowBulkEdit="{Boolean}true"
+                                                allowCreate="{Boolean}true"
+                                                cq-msm-lockable="cq:tags"
+                                                fieldLabel="Tags"
+                                                name="./cq:tags"
+                                                renderReadOnly="{Boolean}true"/>
+                                            <hideinnav
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="hideInNav"
+                                                name="./hideInNav"
+                                                renderReadOnly="{Boolean}true"
+                                                text="Hide in Navigation"
+                                                value="true"/>
+                                            <charset
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/hidden"
+                                                allowBulkEdit="{Boolean}true"
+                                                ignoreData="{Boolean}true"
+                                                name="_charset_"
+                                                value="utf-8"/>
+                                            <breadcrumb
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="breadcrumb"
+                                                name="./breadcrumb"
+                                                renderReadOnly="{Boolean}true"
+                                                text="Show Breadcrumb"
+                                                value="true"/>
+                                            <leftrail
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="leftrail"
+                                                name="./leftrail"
+                                                renderReadOnly="{Boolean}true"
+                                                text="Show Left Rail"
+                                                value="true"/>
+                                            <rightrail
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="rightrail"
+                                                name="./rightrail"
+                                                renderReadOnly="{Boolean}true"
+                                                text="Show Right Rail"
+                                                value="true"/>
+                                        </items>
+                                    </title>
+                                    <moretitles
+                                        cq:showOnCreate="{Boolean}true"
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="More Titles and Description"
+                                        sling:resourceType="granite/ui/components/foundation/form/fieldset">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <navigationtitle
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="navTitle"
+                                                fieldLabel="Navigation Title"
+                                                name="./navTitle"
+                                                renderReadOnly="{Boolean}true"/>
+                                            <subtitle
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="subtitle"
+                                                fieldLabel="Subtitle"
+                                                name="./subtitle"
+                                                renderReadOnly="{Boolean}true"/>
+                                            <description
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/textarea"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="jcr:description"
+                                                fieldLabel="Description"
+                                                name="./jcr:description"
+                                                renderReadOnly="{Boolean}true"/>
+                                        </items>
+                                    </moretitles>
+                                    <onofftime
+                                        cq:showOnCreate="{Boolean}false"
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="On/Off Time"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/fieldset">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <ondate
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="onTime"
+                                                displayedFormat="MMMM DD, YYYY hh:mm a"
+                                                displayTimezoneMessage="{Boolean}true"
+                                                fieldLabel="On Time"
+                                                name="./onTime"
+                                                renderReadOnly="{Boolean}true"
+                                                type="datetime"/>
+                                            <offdate
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+                                                allowBulkEdit="{Boolean}true"
+                                                beforeSelector="coral-datepicker[name=&quot;./onTime&quot;]"
+                                                cq-msm-lockable="offTime"
+                                                displayedFormat="MMMM DD, YYYY hh:mm a"
+                                                displayTimezoneMessage="{Boolean}true"
+                                                fieldLabel="Off Time"
+                                                name="./offTime"
+                                                renderReadOnly="{Boolean}true"
+                                                type="datetime"/>
+                                        </items>
+                                    </onofftime>
+                                    <vanityurl
+                                        cq:showOnCreate="{Boolean}false"
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="Vanity URL"
+                                        sling:resourceType="granite/ui/components/foundation/form/fieldset">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <vanitypath
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/multifield"
+                                                cq-msm-lockable="sling:vanityPath"
+                                                fieldLabel="Vanity URL"
+                                                renderReadOnly="{Boolean}true">
+                                                <field
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                    name="./sling:vanityPath"
+                                                    required="{Boolean}true"/>
+                                            </vanitypath>
+                                            <redirectVanityURL
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                cq-msm-lockable="./sling:redirect"
+                                                name="./sling:redirect"
+                                                renderReadOnly="{Boolean}true"
+                                                text="Redirect Vanity URL"
+                                                value="true"/>
+                                        </items>
+                                    </vanityurl>
+                                </items>
+                            </column>
+                        </items>
+                    </basic>
+                    <seo
+                        cq:showOnCreate="{Boolean}true"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="SEO"
+                        sling:resourceType="granite/ui/components/foundation/section">
+                        <layout
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/foundation/layouts/fixedcolumns"
+                            margin="{Boolean}false"/>
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <section
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="SEO Properties"
+                                        sling:resourceType="granite/ui/components/foundation/form/fieldset">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <metatitle
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/textfield"
+                                                fieldDescription="Maximum of 60 characters"
+                                                fieldLabel="Meta Title"
+                                                maxlength="{Long}60"
+                                                name="./metaTitle"
+                                                renderReadOnly="{Boolean}true"/>
+                                            <metadescription
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/textarea"
+                                                fieldDescription="Maximum of 165 characters"
+                                                fieldLabel="Meta Description"
+                                                maxlength="{Long}165"
+                                                name="./metaDescription"
+                                                renderReadOnly="{Boolean}true"/>
+                                            <metarobots
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/select"
+                                                emptyText="Select"
+                                                fieldDescription="INDEX/NOINDEX - This tells the engines whether to show your page in search results or not.&#xa;&#xa;FOLLOW/NOFOLLOW - This tells the engines what to do with links on your pages: whether they should trust and &quot;follow&quot; your links to the next page or not."
+                                                fieldLabel="Meta Robots"
+                                                name="./metaRobots"
+                                                renderReadOnly="{Boolean}true">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <indexfollow
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="INDEX, FOLLOW"
+                                                        value="INDEX,FOLLOW"/>
+                                                    <noindexnofollow
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="NOINDEX, NOFOLLOW"
+                                                        value="NOINDEX,NOFOLLOW"/>
+                                                    <noindexfollow
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="NOINDEX, FOLLOW"
+                                                        value="NOINDEX,FOLLOW"/>
+                                                </items>
+                                            </metarobots>
+                                            <canonicallink
+                                                cq:showOnCreate="{Boolean}true"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/pathbrowser"
+                                                allowBulkEdit="true"
+                                                fieldDescription="Canonical Link Attribute"
+                                                fieldLabel="Canonical Link"
+                                                name="./canonicalLink"
+                                                renderReadOnly="{Boolean}true"
+                                                rootPath="/content/tda/retail/intl/hong-kong/"/>
+                                        </items>
+                                    </section>
+                                    <sitemap
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="Site Map"
+                                        sling:resourceType="granite/ui/components/foundation/form/fieldset">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <excludeFromXmlSitemap
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/checkbox"
+                                                allowBulkEdit="{Boolean}true"
+                                                cq-msm-lockable="excludeFromXmlSitemap"
+                                                name="./excludeFromXmlSitemap"
+                                                renderReadOnly="{Boolean}true"
+                                                text="Exclude from Sitemap"
+                                                value="true"/>
+                                            <priority
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                fieldLabel="Priority Type"
+                                                name="./priority">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <hundred
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="1.0"
+                                                        value="1.0"/>
+                                                    <ninety
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.9"
+                                                        value="0.9"/>
+                                                    <eighty
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.8"
+                                                        value="0.8"/>
+                                                    <seventy
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.7"
+                                                        value="0.7"/>
+                                                    <sixty
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.6"
+                                                        value="0.6"/>
+                                                    <fifty
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.5"
+                                                        value="0.5"/>
+                                                    <forty
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.4"
+                                                        value="0.4"/>
+                                                    <thirty
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.3"
+                                                        value="0.3"/>
+                                                    <twenty
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.2"
+                                                        value="0.2"/>
+                                                    <ten
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.1"
+                                                        value="0.1"/>
+                                                    <zero
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="0.0"
+                                                        value="0.0"/>
+                                                </items>
+                                            </priority>
+                                            <changefreq
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                fieldLabel="Change Frequency"
+                                                name="./changefreq">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <always
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="always"
+                                                        value="always"/>
+                                                    <monthly
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="monthly"
+                                                        value="monthly&#xa;"/>
+                                                    <hourly
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="hourly"
+                                                        value="hourly"/>
+                                                    <daily
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="daily"
+                                                        value="daily"/>
+                                                    <weekly
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="weekly"
+                                                        value="weekly"/>
+                                                    <yearly
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="yearly"
+                                                        value="yearly"/>
+                                                    <never
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="never"
+                                                        value="never"/>
+                                                </items>
+                                            </changefreq>
+                                        </items>
+                                    </sitemap>
+                                </items>
+                            </column>
+                        </items>
+                    </seo>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Hongkong Page"
+    sling:resourceSuperType="core/wcm/components/page/v2/page"
+    componentGroup=".hidden"/>
+    body.html:
+    <sly data-sly-use.runmode="com.tda.common.models.CurrentRunMode"/>
+<!-- Loading script asynchronously -->
+<sly data-sly-test="${wcmmode.disabled}" >
+	<script type="text/javascript">
+		(function(a,b,c,d){
+		a='//tags.tiqcdn.com/utag/tdameritrade/hongkong/${runmode.getCurrentRunMode @ context='scriptString'}/utag.js';
+		b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+		a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+		})();
+	</script>
+</sly>
+
+<div class="body-wrapper">
+	<sly data-sly-resource ="${@path='header', resourceType='foundation/components/iparsys'}"></sly>
+	<sly data-sly-include="content.html"></sly>
+</div>
+
+<div data-sly-resource ="${@path='footer', resourceType='foundation/components/iparsys'}"> </div>
+content.html:
+
+<sly data-sly-include="/libs/wcm/core/components/init/init.jsp" />
+<sly data-sly-use.head="com.tda.apac.core.models.HomeModel"/>
+<main class="page-content">
+  
+	 <!--/* Breadcrumb */-->
+		<sly data-sly-test="${pageProperties.breadcrumb}"
+			data-sly-resource ="${@path='breadcrumb', resourceType='apac/components/structure/breadcrumb'}">
+        </sly>
+  
+         <!--/* page-main-content */-->
+	     <div class="${head.getRailMain @ context='html'}">
+         	
+           <!--/* Cross Sell for Left Rail only */-->
+              <div data-sly-test="${head.leftrail}" class="left-rail-container">
+				<sly data-sly-resource ="${@path='leftRail', resourceType='apac/components/content/leftnav'}"> </sly>
+                   <div class="cross-sell-body__wrapper">
+                       <sly data-sly-resource ="${@path='leftNav-crosssell', resourceType='wcm/foundation/components/responsivegrid'}"> </sly>
+                     </div>
+                 </div>
+			
+           <!--/* Main Body */-->
+			<div class="${head.getMainBody @ context='html'}" 
+				 data-sly-resource ="${@path='mainBody', resourceType='wcm/foundation/components/responsivegrid'}">
+			</div>
+           
+           
+           <!--/* Cross sell for Right Rail only */-->
+			<div data-sly-test="${head.rightrail}"
+				class="hs-cross-sell-body__wrapper" 
+				data-sly-resource ="${@path='cross-sell', resourceType='wcm/foundation/components/responsivegrid'}">
+			</div>
+		</div>
+</main>
+customheaderlibs.html:
+<sly data-sly-use.runmode="com.tda.common.models.CurrentRunMode"/>
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html" />
+<sly data-sly-use.head="com.tda.apac.core.models.TemplateHeadModel"/>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<sly data-sly-test="${wcmmode.disabled}" >
+<sly data-sly-test.runMode="${runmode.getCurrentRunMode}">
+<script type="text/javascript">
+       var tda_dl = {
+      'site_environment': '${runMode @ context='scriptString'} ',
+      'site_hierarchy':'[${head.getSiteHierarchy @ context='scriptString'}]'
+           }
+     </script>
+   <script type="text/javascript">
+     var _tdaTrackAnalytics = function(){};
+     </script>
+    <!-- Loading script synchronously -->
+  <script type="text/javascript" src="//tags.tiqcdn.com/utag/tdameritrade/hongkong/${runMode @ context='scriptString'}/utag.sync.js"></script>
+</sly>
+</sly>
+<link rel="canonical" data-sly-test="${head.canonicalTag}" href="${head.canonicalTag @ extension='html'}">
+<link type="image/x-icon" href="/content/dam/tda/retail/intl/common/images/icons/favicon.ico" rel="shortcut icon"/>
+<link rel="stylesheet" type="text/css" href="//media.tdameritrade.com/media/css/tdasans_remote.css"/>
+<!--/* Include Context Hub */-->
+<sly data-sly-resource="${'contexthub' @ resourceType='granite/contexthub/components/contexthub'}"/>
+head.html:
+<template data-sly-template.head="${ @ page }"
+          data-sly-use.headlibRenderer="headlibs.html"
+          data-sly-use.headResources="head.resources.html">
+    <meta charset="UTF-8">
+	<sly data-sly-use.hreflang="com.tda.apac.core.models.HrefLanguage"/>
+	<title>${properties.metaTitle? properties.metaTitle : properties.jcr:title @ context='html'}</title>
+	<meta data-sly-test="${properties.metaDescription}" name="description" content="${properties.metaDescription  @ context='html'}"/>
+	<meta data-sly-test="${properties.metaRobots}" name="robots" content="${properties.metaRobots}"/>
+    <meta data-sly-test.keywords="${page.keywords}" name="keywords" content="${keywords}"/>
+    <meta data-sly-test.templateName="${page.templateName}" name="template" content="${templateName}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<sly data-sly-list.hreflangitem="${hreflang.HrefLanguageBeanArray}" >
+    <link rel="alternate" href="${hreflangitem.href @extension='html'}" hreflang="${hreflangitem.hrefLang}" />
+    </sly>
+    <sly data-sly-include="head.socialmedia.html"></sly>
+    <sly data-sly-include="customheaderlibs.html"></sly>
+    <sly data-sly-call="${headlibRenderer.headlibs @
+                                designPath                = page.designPath,
+                                staticDesignPath          = page.staticDesignPath,
+                                clientLibCategories       = page.clientLibCategories,
+                                clientLibCategoriesJsHead = page.clientLibCategoriesJsHead,
+                                hasCloudconfigSupport     = page.hasCloudconfigSupport}"></sly>
+    <sly data-sly-test.appResourcesPath=${page.appResourcesPath} data-sly-call="${headResources.favicons @ path = appResourcesPath}"></sly>
+</template>
+page.html:
+<!DOCTYPE HTML>
+<html data-sly-use.page="com.adobe.cq.wcm.core.components.models.Page" lang="${page.language}"
+      data-sly-use.head="head.html"
+      data-sly-use.footer="footer.html"
+      data-sly-use.redirect="redirect.html">
+    <head data-sly-call="${head.head @ page = page}"></head>
+    <body class="${pageProperties.leftrail == 'true'? ' ' : 'no-left-rail'}">
+        <sly data-sly-test.isRedirectPage="${page.redirectTarget && (wcmmode.edit || wcmmode.preview)}"
+             data-sly-call="${redirect.redirect @ redirectTarget = page.redirectTarget}"></sly>
+        <sly data-sly-test="${!isRedirectPage}">
+            <sly data-sly-include="body.socialmedia_begin.html"></sly>
+            <sly data-sly-include="body.html"></sly>
+            <sly data-sly-call="${footer.footer @ page = page}"></sly>
+            <sly data-sly-include="body.socialmedia_end.html"></sly>
+        </sly>
+    </body>
+</html>
+<div data-sly-resource ="${@path='disclosures', resourceType='wcm/foundation/components/responsivegrid'}"> </div>
