@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Image"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[tda.image,core.wcm.components.image.v2.editor]"
+    helpPath="https://www.adobe.com/go/aem_cmp_image_v2"
+    trackingFeature="core-components:image:v2">
+    <content
+        granite:class="cmp-image__editor"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <asset
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Asset"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <columns
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                                margin="{Boolean}true">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <column
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <imagetype
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:orderBefore="file"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                fieldLabel="Image Type"
+                                                name="./imagetype">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <hero
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="Hero"
+                                                        value="hero"/>
+                                                    <half-width
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="Half Width"
+                                                        value="half-width"/>
+                                                    <full-width
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="Full Width"
+                                                        value="full-width"/>
+                                                </items>
+                                            </imagetype>
+                                            <imagelabel
+                                                jcr:primaryType="nt:unstructured"
+                                                jcr:title="Image"
+                                                sling:orderBefore="file"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"/>
+                                        </items>
+                                    </column>
+                                </items>
+                            </columns>
+                        </items>
+                    </asset>
+                    <metadata
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Metadata"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true"/>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+<sly data-sly-use.image="com.adobe.cq.wcm.core.components.models.Image"
+     data-sly-use.templates="core/wcm/components/commons/v1/templates.html"
+     data-sly-test="${image.src}">
+<sly data-sly-test="${properties.imagetype == 'hero'}"> 
+<div class="image image-hero">
+    <div class="image-hero__background-container" style="background-image: url('${properties.fileReference @ context='styleString'}');" role="img"
+      aria-label="${image.alt}"></div>
+</div> 
+</sly>	
+
+<sly data-sly-test="${properties.imagetype != 'hero'}">  
+  <img class="image__${properties.imagetype}" src="${properties.fileReference @ context='html'}" alt="${image.alt || true}" />
+    <sly data-sly-test="${image.title}">
+      <p class="image__${properties.imagetype} image__caption paragraph--small">
+        ${image.title}
+      </p>
+   </sly>
+ </sly>
+</sly>
+<sly data-sly-call="${templates.placeholder @ isEmpty = !image.src, classAppend = 'cmp-image cq-dd-image'}"></sly>
