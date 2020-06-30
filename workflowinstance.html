@@ -1,0 +1,290 @@
+<%--
+  ADOBE CONFIDENTIAL
+
+  Copyright 2014 Adobe Systems Incorporated
+  All Rights Reserved.
+
+  NOTICE:  All information contained herein is, and remains
+  the property of Adobe Systems Incorporated and its suppliers,
+  if any.  The intellectual and technical concepts contained
+  herein are proprietary to Adobe Systems Incorporated and its
+  suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law.
+  Dissemination of this information or reproduction of this material
+  is strictly forbidden unless prior written permission is obtained
+  from Adobe Systems Incorporated.
+--%><%
+%><%@ page session="false"
+             import="com.adobe.granite.ui.components.AttrBuilder,
+                     com.adobe.granite.workflow.WorkflowSession,
+                     com.adobe.granite.workflow.exec.WorkItem,
+                     com.adobe.granite.workflow.exec.Workflow,
+                     com.adobe.granite.workflow.exec.WorkflowData,
+                     com.adobe.granite.workflow.model.WorkflowModel,
+                     com.day.cq.wcm.api.Page,
+                     com.day.text.Text,
+                     org.apache.commons.lang.StringUtils,
+                     org.apache.sling.api.resource.Resource,
+                     org.apache.sling.api.resource.ResourceResolver,
+                     org.apache.sling.api.resource.ValueMap,
+                     org.apache.sling.commons.json.JSONException,
+                     org.apache.sling.commons.json.JSONObject,
+                     org.apache.sling.event.jobs.Job,
+                     org.slf4j.Logger,
+                     javax.jcr.Node,
+                     javax.jcr.RepositoryException,
+                     javax.jcr.Session,
+                     javax.jcr.security.AccessControlManager,
+                     javax.jcr.security.Privilege,
+                     java.text.SimpleDateFormat,
+                     java.util.Collection,
+                     java.util.Date,
+                     java.util.Iterator,
+                     java.util.regex.Matcher,
+                     com.adobe.granite.workflow.payload.PayloadInfoBuilderManager,
+                     com.adobe.granite.workflow.payload.PayloadInfo,
+                     org.apache.sling.api.resource.ResourceResolver,
+                     com.adobe.granite.workflow.payload.PayloadInfoBuilderContext"%>
+<%@ page import="com.adobe.granite.ui.components.Tag, java.util.Locale, java.text.DateFormat" %>
+<%@include file="/libs/granite/ui/global.jsp"%><%
+    ValueMap vm = resource.adaptTo(ValueMap.class);
+    Workflow workflowInstance = vm.get("workflowInstance", Workflow.class);
+
+    if (workflowInstance == null) {
+        return;
+    }
+
+    Date startTime = workflowInstance.getTimeStarted();
+    String startTimeString = getDateString(startTime,request.getLocale());
+
+    String comment = workflowInstance.getMetaDataMap().get("startComment", String.class);
+    String title = workflowInstance.getWorkflowData().getMetaDataMap().get("workflowTitle", String.class);
+    String wflowId = workflowInstance.getId();
+    String currentWitemId = null;
+    String currentWitemAssignee = null;
+    String workStep = null;
+
+    WorkflowData data = workflowInstance.getWorkflowData();
+
+    String payload = null;
+    String coverUrl = null;
+    String payloadLink = null;
+    JSONObject failureDetails = new JSONObject();
+    WorkItem workItem = null;
+
+    if (data.getPayloadType() != null && (data.getPayloadType().equals("JCR_PATH")
+        || data.getPayloadType().equals("URL"))) {
+
+        // we first check to see if our data source has given us a work item
+        workItem = vm.get("workItem", WorkItem.class);
+        if (workItem == null) {
+            // if we have no work item see if the workflow instance can give us one
+            if (workflowInstance.getWorkItems().size() > 0) {
+                workItem = workflowInstance.getWorkItems().get(0);
+                currentWitemId = workItem.getId();
+                currentWitemAssignee = workItem.getCurrentAssignee();
+                 workStep   = workItem.getNode().getType();
+            }
+        }
+
+        if (workItem != null) {
+            failureDetails = getFailureDetail(workItem, log);
+        }
+
+        // use the payload as specified in the workflow instance
+        payload = (String) data.getPayload();
+    } else {
+        if (data.getPayload() != null) {
+            payload = data.getPayload().toString();
+        }
+    }
+
+    if (StringUtils.isNotBlank(payload)) {
+        ResourceResolver resolver = slingRequest.getResourceResolver();
+        PayloadInfoBuilderManager builder = resolver.adaptTo(PayloadInfoBuilderManager.class);
+        PayloadInfo info = builder.getPayloadInfo(payload, PayloadInfoBuilderContext.INITIATOR_HINT.TOUCH_WORKFLOW_CONSOLE.name());
+        coverUrl = getThumbnailUrlForPath(resourceResolver, payload);
+        if (StringUtils.isBlank(coverUrl) && info!=null) {
+            coverUrl = info.getThumbnailPath();
+        }
+        payloadLink = info.getBrowserPath();
+    }
+
+    AccessControlManager acm = resourceResolver.adaptTo(Session.class).getAccessControlManager();
+    Resource instances = resourceResolver.getResource("/etc/workflow/instances");
+
+    String state = getStringValue(workflowInstance.getState());
+    boolean hasFailures = failureDetails.has("workitemId") &&
+                          StringUtils.isNotBlank(failureDetails.getString("workitemId"));
+
+    String quickActions = "cq-workflow-admin-models-action--payload";
+    if (instances != null && hasPermission(acm, instances.adaptTo(Node.class), Privilege.JCR_REMOVE_NODE)) {
+        quickActions += " cq-workflow-admin-models-action-terminate";
+        quickActions += " cq-workflow-admin-models-action-history";
+        quickActions += " cq-workflow-admin-models-action-rename";
+        quickActions += " cq-workflow-admin-models-action-withdraw";
+        quickActions += " cq-workflow-admin-models-action-failuredetails";
+
+        if (hasFailures) {
+            // this will not show up on instances as this rel doesn't exist in the content
+            // it will only be available in failures at the moment
+            quickActions += " cq-workflow-admin-models-action-retrystep";
+            quickActions += " cq-workflow-admin-models-action-terminate-and-restart";
+        }
+    }
+    if ("SUSPENDED".equals(state)) {
+        quickActions += " cq-workflow-admin-models-action-resume";
+    }
+    if ("RUNNING".equals(state)) {
+        quickActions += " cq-workflow-admin-models-action-suspend";
+    }
+
+    // calculate initiator
+    String initiator = workflowInstance.getInitiator();
+    if (data.getMetaDataMap().containsKey("userId")) {
+        String launcherUser = data.getMetaDataMap().get("userId", String.class);
+        if (initiator != null && !initiator.equals(launcherUser)) {
+            initiator += " (" + launcherUser + ")";
+        }
+    }
+
+    String xssTitle = xssAPI.encodeForHTML(i18n.getVar(getStringValue(title)));
+    String xssComment = xssAPI.encodeForHTML(getStringValue(comment));
+    String xssJobID = xssAPI.encodeForHTML(getStringValue(wflowId));
+    String xssWork = xssAPI.encodeForHTML(getStringValue(workStep));
+    String xsscurrentassignee = xssAPI.encodeForHTML(getStringValue(currentWitemAssignee));
+    String xsscurrentworkitemid = xssAPI.encodeForHTML(getStringValue(currentWitemId));
+    String xssStatus = xssAPI.encodeForHTML(i18n.getVar(state));
+    String xssStartTime = xssAPI.encodeForHTML(getStringValue(startTimeString));
+    String xssInitiator = xssAPI.encodeForHTML(getStringValue(initiator));
+
+    String xssModel = xssAPI.encodeForHTML(getStringValue(workflowInstance.getWorkflowModel() == null ? "" : workflowInstance.getWorkflowModel().getTitle()));
+    String xssVersion = xssAPI.encodeForHTML(getStringValue(workflowInstance.getWorkflowModel() == null ? "" : workflowInstance.getWorkflowModel().getVersion()));
+    String xssPayload = xssAPI.encodeForHTML(getStringValue(payload));
+    String detailsPage = getDetailsPage(resourceResolver, workflowInstance, payload);
+    if (!StringUtils.isBlank(detailsPage)) {
+        detailsPage = xssAPI.getValidHref(request.getContextPath() + detailsPage);
+    }
+    AttrBuilder attrBuilder = new AttrBuilder(request, xssAPI);
+    attrBuilder.addClass("card-workflow-active");
+    attrBuilder.addClass("foundation-collection-item");
+    attrBuilder.addOther("foundation-collection-item-id", workflowInstance.getId());
+    attrBuilder.add("role", "option");
+
+    Tag tag = cmp.consumeTag();
+    AttrBuilder attrs = tag.getAttrs();
+
+    attrs.add("is", "coral-table-row");
+
+    attrs.addOther("cq-workflow-admin-failure-details", failureDetails.toString());
+    if (workItem != null) {
+        attrs.addOther("cq-workflow-admin-workitem-item-id", workItem.getId());
+    }
+
+    if (StringUtils.isNotBlank(payloadLink)) {
+        attrs.addOther("payload-link", payloadLink);
+    }
+
+%>
+<tr <%= attrs %>>
+    <td is="coral-table-cell" coral-table-rowselect>
+        <% if (StringUtils.isNotBlank(coverUrl)) { %>
+            <img class="foundation-collection-item-thumbnail" src="<%= xssAPI.getValidHref(coverUrl) %>" alt="Placeholder icon">
+        <% } %>
+    </td>
+    <td is="coral-table-cell"><%= xssStatus %></td>
+    <td is="coral-table-cell"><%= xssInitiator %></td>
+    <td is="coral-table-cell"><%= xssStartTime %></td>
+    <td is="coral-table-cell"><%= xssModel %></td>
+    <td is="coral-table-cell"><%= xssPayload %></td>
+    <td is="coral-table-cell"><%= xssComment %></td>
+    <td class="foundation-collection-item-title" is="coral-table-cell"><%= xssTitle %></td>
+    <td is="coral-table-cell"><%= xssVersion %>
+    <td is="coral-table-cell"><%= xssJobID %>
+    <td is="coral-table-cell"><%= xsscurrentassignee %>
+    <td is="coral-table-cell"><%= xsscurrentworkitemid %>
+    <td is="coral-table-cell"><%= xssWork %>   
+        <meta class="foundation-collection-quickactions" data-foundation-collection-quickactions-rel="<%= xssAPI.encodeForHTMLAttr(quickActions) %>">
+    </td>
+</tr><%!
+
+    static final String WORKFLOW_DETAILS_PAGE = "cq:workflowDetailsPage";
+
+    boolean hasPermission(AccessControlManager acm, Node page, String privilege) throws RepositoryException {
+        Privilege p = acm.privilegeFromName(privilege);
+        return acm.hasPrivileges(page.getPath(), new Privilege[] { p });
+    }
+
+    String getDetailsPage(ResourceResolver resourceResolver,
+            Workflow workflowInstance, String payload) {
+        WorkflowModel workflowModel = workflowInstance.getWorkflowModel();
+        if (workflowModel != null && StringUtils.isNotBlank(payload)) {
+            String workflowModelId = workflowModel.getId();
+            if (workflowModelId.endsWith("jcr:content/model")) {
+                workflowModelId = Text.getRelativeParent(workflowModel.getId(), 1);
+            }
+            Resource workflowModelResource = resourceResolver.getResource(workflowModelId);
+            if (workflowModelResource != null) {
+                ValueMap workflowModelVM = workflowModelResource.getValueMap();
+                String detailsPage = workflowModelVM.get(WORKFLOW_DETAILS_PAGE,
+                    String.class);
+                if (detailsPage != null) {
+                    detailsPage = detailsPage.replaceAll("\\$\\{item\\}",
+                        Matcher.quoteReplacement(workflowInstance.getId()));
+                    return detailsPage.replaceAll("\\$\\{payload\\}",
+                        Matcher.quoteReplacement(payload));
+                }
+            }
+        }
+        return null;
+    }
+
+    String getStringValue(String input) {
+        return (StringUtils.isBlank(input)) ? "" : input;
+    }
+
+    String getDateString(Date dte,Locale locale) {
+        DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale);
+        return formatter.format(dte.getTime());
+
+    }
+
+    private JSONObject getFailureDetail(WorkItem item, Logger log) {
+        JSONObject result = new JSONObject();
+        if (item != null) {
+            try {
+                result.put("message", item.getMetaDataMap().get("failureMessage", ""));
+                result.put("stack", item.getMetaDataMap().get("failureStack", ""));
+                result.put("workitemId", item.getMetaDataMap().get("failedWorkItemId", ""));
+                result.put("nodeTitle", item.getMetaDataMap().get("failedNodeTitle", ""));
+            } catch (JSONException e) {
+                log.warn("Unable to obtain failure information for workitem");
+            }
+        }
+
+        return result;
+    }
+
+    private String getThumbnailUrlForPath(ResourceResolver resourceResolver, String payloadPath) {
+        if (StringUtils.isNotBlank(payloadPath)) {
+            Resource payloadResource = resourceResolver.getResource(payloadPath);
+            if (payloadResource != null) {
+                if (isPayloadFolder(payloadResource)) {
+                    return "/libs/cq/inbox/content/inbox/images/folder319.png";
+                } else {
+                    return payloadPath + ".thumb.319.319.jpg";
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isPayloadFolder(Resource payloadRes) {
+        if (payloadRes != null) {
+            return (payloadRes.isResourceType("sling:Folder")
+                    || payloadRes.isResourceType("sling:OrderedFolder")
+                    || payloadRes.isResourceType("nt:folder"));
+        }
+        return false;
+    }
+%>
