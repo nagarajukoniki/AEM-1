@@ -1,0 +1,213 @@
+tda_fw_hero_image.html:
+<sly data-sly-use.heromodel="com.tda.common.models.HeroModel"/>
+${heromodel.getEditMessage @ context='html'}
+<div class="WPSHTMLComponent">
+	<span>
+		<div class="pageHero">
+			<div class="pageHero_inner" style="${heromodel.getBackgroundStyle  @ context='html'}">
+				<div class="contentWrapper">
+					<div class="pageHero_content">
+						<h2 class="pageHero_container_title">${properties.title @context='html'}</h2>
+						${heromodel.getCtaLink @ context='html'}
+					</div>
+				</div>
+			</div>
+		</div>
+	</span>
+</div>
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Global FW Hero Image"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/tabs">
+        <items jcr:primaryType="nt:unstructured">
+            <general
+                jcr:primaryType="nt:unstructured"
+                jcr:title="General"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                    margin="{Boolean}false"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <column
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <Image
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                autoStart="{Boolean}false"
+                                class="cq-droptarget"
+                                fieldLabel="Image"
+                                fileNameParameter="./fileName"
+                                fileReferenceParameter="./fileReference"
+                                mimeTypes="[image]"
+                                multiple="false"
+                                name="./heroImage"
+                                uploadUrl="${suffix.path}"
+                                useHTML5="{Boolean}true"/>
+                            <title
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceSuperType="common/components/content/tda_rich_text_editor/cq:dialog/content/items/container/items/text/items/column/items/text"
+                                sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+                                fieldLabel="Title"
+                                name="./title"
+                                removeSingleParagraphContainer="{Boolean}true"
+                                useFixedInlineToolbar="{Boolean}true"/>
+                            <ctalink
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                fieldDescription="Select 'Modal' for CTA to open pop-up, select 'Link To Page' for CTA to open a new page."
+                                fieldLabel="CTA Link Type"
+                                name="./ctalink">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <modal
+                                        jcr:primaryType="nt:unstructured"
+                                        text="Modal"
+                                        value="modal"/>
+                                    <linktopage
+                                        jcr:primaryType="nt:unstructured"
+                                        text="Link To Page"
+                                        value="linktopage"/>
+                                </items>
+                            </ctalink>
+                            <ctalinktext
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="CTA Link Text"
+                                name="./ctalinktext"/>
+                            <ctalinkurl
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                fieldDescription="Browse Page Path"
+                                fieldLabel="CTA URL"
+                                name="./ctalinkurl"
+                                rootPath="/content/workplace"/>
+							<urlnewwindow
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                checked="{Boolean}true"
+                                name="./urlnewwindow"
+                                text="Open in new window? "
+                                uncheckedValue="false"
+                                value="true"/>
+                        </items>
+                    </column>
+                </items>
+            </general>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="Background image with optional foreground text and CTA."
+    jcr:primaryType="cq:Component"
+    jcr:title="Global FW Hero Image"
+    componentGroup="TDA Common"/>
+    cq.editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+</jcr:root>
+heromodel.java:
+package com.tda.common.models;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.tda.common.models.TDACommonUtil;
+import com.day.cq.wcm.api.WCMMode;
+
+@Model(adaptables = { SlingHttpServletRequest.class,
+		Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class HeroModel extends TDAComponentNames {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HeroModel.class);
+	
+	@ValueMapValue(name = "fileReference", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String fileReference = "";
+	
+	@ValueMapValue(name = "title", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String title = "";
+
+	@ValueMapValue(name = "ctalinktext", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaLinkText = "";
+
+	public String getCtaLinkText() {
+		return ctaLinkText;
+	}
+
+	@ValueMapValue(name = "ctalinkurl", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaLinkURL = "";
+	
+	@ValueMapValue(name = "ctalink", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaLinkType = "";
+	
+	/**
+	 * The post construct initiates the modal class. 
+	 * 
+	 * @return
+	 */
+	@PostConstruct
+	public void init() {
+		LOGGER.debug("In init method");
+		mode = WCMMode.fromRequest(request);
+	}
+
+	
+	/**
+	 * The getter is to wrap the background URL in a style if the image file exists.  
+	 * 
+	 * @return background URL with image path is returned.
+	 */
+	public String getBackgroundStyle() {
+		String backgroundURL = "";
+		if(fileReference != null && fileReference.trim().length() > 0 ){
+			backgroundURL = "background-image:url(" + fileReference + ");";
+		}
+		return backgroundURL;
+	}
+	
+	/**
+     * The getter method wraps link title resource path including extension based on the link url. Defaulted to empty.
+     * 
+     * @return CTA anchor tag.
+     */
+	public String getCtaLink() {
+		String anchorTag = "";
+		String titlePath =  TDACommonUtil.getValidPath(ctaLinkURL);
+		
+		if(getCtaLinkText() != null && getCtaLinkText().trim().length() > 0) {
+			if("modal".equals(ctaLinkType)) {
+				anchorTag = "<a class=\"pageHero_container_cta btn-green-solid wps-modal-show\" href=\"javascript:void(0)\" >"+getCtaLinkText()+"</a>";
+			} else {
+				if(titlePath != null && titlePath.trim().length() > 0) {
+					anchorTag = "<a class=\"pageHero_container_cta btn-green-solid\" href=\""+titlePath+"\" target=\""+getPagePathTarget()+"\" >"+getCtaLinkText().trim()+"</a>";
+				} else {
+					anchorTag = getCtaLinkText().trim();
+				}
+			}
+		}
+		return anchorTag;
+	}
+}
