@@ -1,0 +1,89 @@
+dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Character Converter Component"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="tda.characterconverter"
+    helpPath="https://www.adobe.com/go/aem_cmp_list_v1">
+    <content
+        granite:class="core-wcm-list-v1"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <layout
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <general
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <page
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                        fieldLabel="Select page to convert"
+                                        name="./selectedpage"/>
+                                    <typeofconvertion
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                        fieldLabel="Convert from/to?"
+                                        name="./type"
+                                        text="Convert from/to?">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <s2t
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/radio"
+                                                checked="{Boolean}false"
+                                                name="./s2t"
+                                                text="Simplified to Traditional"
+                                                value="1"/>
+                                            <t2s
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/foundation/form/radio"
+                                                checked="{Boolean}false"
+                                                name="./t2s"
+                                                text="Traditional to Simplified"
+                                                value="2"/>
+                                        </items>
+                                    </typeofconvertion>
+                                    <translatebutton
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                                        fieldLabel="Convert"
+                                        formId="languagetranslateform"
+                                        name="./button"
+                                        text="Convert"/>
+                                </items>
+                            </column>
+                        </items>
+                    </general>
+                </items>
+            </layout>
+        </items>
+    </content>
+</jcr:root>
+context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Character Converter Component"
+    componentGroup="common"/>
+    editconfig:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig"/>
+    character-converter.html
+    <table border=1><tr>Convert property values from simplified chinese to traditional chinese and vise versa</tr>
+<tr><td>Page </td><td> ${properties.selectedpage}</td></tr>
+<tr><td>Type of convertion </td><td> ${properties.type}</td></tr>
+</table>
