@@ -1,0 +1,192 @@
+media-detail.html:
+<div data-sly-use.mediadetailModel="com.tda.common.models.MediaDetailModel"></div>
+<div data-sly-test="${wcmmode.edit}">
+     <center>Configure Media Details Component</center> 
+</div>
+<sly data-sly-test="${mediadetailModel.isValidMedia}">
+<section>
+    <div class="component__body-container">
+        <div class="sectionheadline no-margin">
+            <h1 class="aligned-left text-black medium-headline">${mediadetailModel.articleModel.head}</h1>
+        </div>
+    </div>
+</section>
+<section class="module-container">
+    <div class="component__body-container">
+       <div class="article-body">
+            <p><img alt="Article" src="${mediadetailModel.articleModel.heroSmUrl}"></p> 
+			${mediadetailModel.articleModel.renderedHtml @context="html"}
+        </div>
+    </div>
+</section>
+</sly>
+MediaDetailModel.java:
+package com.tda.common.models;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.models.annotations.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
+
+@Model(adaptables = { SlingHttpServletRequest.class, Resource.class })
+public class MediaDetailModel {
+	private static final Logger log = LoggerFactory.getLogger(MediaDetailModel.class);
+	@Inject
+	SlingHttpServletRequest request;
+
+	@Inject
+	private ResourceResolverFactory resolverFactory;
+
+	String mediaPath = null;
+	String resourceType = null;
+	public ArticleModel articleModel;
+	boolean isValidMedia = false;
+
+	@PostConstruct
+	protected void init() {
+		try {
+
+			String resourcePath = request.getRequestPathInfo().getResourcePath();
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put(ResourceResolverFactory.SUBSERVICE, "tdaRead");
+			ResourceResolver resourceResolver = resolverFactory.getServiceResourceResolver(param);
+
+			checkResourcetypeValidity(resourceResolver, resourcePath);
+		} catch (Exception e) {
+			log.error("Exception in MediaDetailModel:" + e);
+		}
+	}
+
+	public void checkResourcetypeValidity(ResourceResolver resourceResolver, String resourcePath)
+			throws ValueFormatException, PathNotFoundException, RepositoryException {
+		Node pagePath = null, mediaDetailNode = null;
+		Resource resource, mediaDetailResource = null;
+		resource = resourceResolver.getResource(resourcePath);
+		pagePath = resource.adaptTo(Node.class);
+		if (pagePath.hasProperty("pagepath")) {
+			log.debug("media path:" + pagePath.getPath());
+			mediaPath = pagePath.getProperty("pagepath").getString();
+			if (mediaPath != null) {
+				mediaDetailResource = resourceResolver.getResource(mediaPath + "/jcr:content/parsys");
+				if (mediaDetailResource != null && !ResourceUtil.isNonExistingResource(mediaDetailResource)) {
+					mediaDetailNode = mediaDetailResource.adaptTo(Node.class);
+					resourceType = getResourceType(mediaDetailNode);
+					if (resourceType != null && resourceType.equals("ecms-aem/components/content/article-component")) {
+						if (mediaDetailResource != null && !ResourceUtil.isNonExistingResource(mediaDetailResource)) {
+							log.debug("Before ArticleModel adapting");
+							articleModel = mediaDetailResource.adaptTo(ArticleModel.class);
+							isValidMedia = true;
+							log.info("The resource type is valid " + isValidMedia);
+						}
+					}
+				} else {
+					log.info(mediaDetailResource + " Resource does not exists");
+				}
+			}
+		}
+
+	}
+
+	public String getResourceType(Node mediaResourceNode)
+			throws ValueFormatException, PathNotFoundException, RepositoryException {
+		return mediaResourceNode.hasProperty("sling:resourceType")
+				? mediaResourceNode.getProperty("sling:resourceType").getString()
+				: null;
+	}
+
+	public ArticleModel getArticleModel() {
+		return articleModel;
+	}
+
+	public boolean isValidMedia() {
+		return isValidMedia;
+	}
+}
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Page"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[cq.common.wcm,cq.siteadmin.admin.properties]"
+    mode="edit">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/foundation/container"
+        class="cq-dialog-content-page">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/foundation/layouts/tabs"
+                    type="nav"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <mediadetail
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/foundation/section">
+                        <layout
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/foundation/layouts/fixedcolumns"
+                            margin="{Boolean}false"/>
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <pagepath
+                                        cq:showOnCreate="{Boolean}true"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldDescription="Article Page Path"
+                                        fieldLabel="Article Page Path"
+                                        name="./pagepath"
+                                        rootPath="/content"/>
+                                </items>
+                            </column>
+                        </items>
+                    </mediadetail>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="media details component for displaying article page"
+    jcr:primaryType="cq:Component"
+    jcr:title="Media Detail"
+    componentGroup="common"/>
+    cq.editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+    <cq:listeners
+        jcr:primaryType="cq:EditListenersConfig"
+        afterdelete="REFRESH_PARENT"
+        afteredit="REFRESH_PAGE"
+        afterinsert="REFRESH_PAGE"/>
+</jcr:root>
