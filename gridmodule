@@ -1,0 +1,347 @@
+gridmodule.html:
+<sly data-sly-test="${wcmmode.edit}" ><center> Configure Image Grid Component</center></sly>
+      <sly data-sly-use.listModuleItems="com.tda.common.models.GridModuleModel">
+              <figure class="list-reasons-item list-reasons-col">
+                  <a href="${listModuleItems.link @ context='uri' }" class="list-reasons-item-link" title="${listModuleItems.getFigCaptionTitle}">
+                <span class="list-reasons-img-container">
+                ${listModuleItems.getImgTag @ context='html'}
+                </span>
+                <figurecaption class="list-reasons-text">
+                  <p class="list-reasons-header" style="${listModuleItems.getStyleTag@ context='unsafe'}">${listModuleItems.getFigCaptionTitle @ context='html'}</p>
+                 <p>${listModuleItems.getFigCaptionDesc @ context='html'}</p>
+                  ${listModuleItems.getArrowLink @ context='html'}
+                </figurecaption>
+              </a>
+              </figure>
+      </sly>
+      dialog.xml:
+      <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Image Grid"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <layout
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <general
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <link
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                        fieldDescription="Select Link"
+                                        fieldLabel="Link to"
+                                        name="./link"
+                                        rootPath="/content"/>
+                                </items>
+                            </column>
+                        </items>
+                    </general>
+                    <Image
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Image"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <image
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                        allowUpload="{Boolean}false"
+                                        autoStart="{Boolean}true"
+                                        class="cq-droptarget"
+                                        fieldLabel="Image"
+                                        fileNameParameter="./fileName"
+                                        fileReferenceParameter="./fileReference"
+                                        mimeTypes="[image]"
+                                        multiple="false"
+                                        name="./imagePath"
+                                        uploadUrl="${suffix.path}"
+                                        useHTML5="{Boolean}true"/>
+                                    <altimgtext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Image Alternate Text"
+                                        name="./altimgtext"/>
+                                </items>
+                            </column>
+                        </items>
+                    </Image>
+                    <headline
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Headline"
+                        sling:resourceSuperType="common/components/content/parent-dialog/cq:dialog/content/items/layout/items/headline"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <headline
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Headline"
+                                        name="./figCaptionTitle"/>
+                                    <sectiondivider
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/hidden"
+                                        fieldLabel="Section Divider"
+                                        name="./sectiondivider">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <none
+                                                jcr:primaryType="nt:unstructured"
+                                                text="None"
+                                                value=""/>
+                                            <below
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Below Headline"
+                                                value="dividerBottom"/>
+                                            <above
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Above Headline"
+                                                value="dividerTop"/>
+                                        </items>
+                                    </sectiondivider>
+                                    <alignment
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/hidden"
+                                        fieldLabel="Alignment"
+                                        name="./headlinealignment"
+                                        selectionMode="single">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <left
+                                                jcr:primaryType="nt:unstructured"
+                                                icon="textLeft"
+                                                name="./left"
+                                                text="Left"
+                                                value="left"/>
+                                            <center
+                                                jcr:primaryType="nt:unstructured"
+                                                icon="textCenter"
+                                                name="./center"
+                                                text="Center"
+                                                value="center"/>
+                                            <right
+                                                jcr:primaryType="nt:unstructured"
+                                                icon="textRight"
+                                                name="./right"
+                                                text="Right"
+                                                value="right"/>
+                                        </items>
+                                    </alignment>
+                                    <headlinesize
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/form/hidden"
+                                        fieldLabel="Headline Size"
+                                        name="./headlinesize">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <small
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Small"
+                                                value="headline-small"/>
+                                            <medium
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Medium"
+                                                value="headline-medium"/>
+                                            <large
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Large"
+                                                value="headline-large"/>
+                                        </items>
+                                    </headlinesize>
+                                </items>
+                            </column>
+                        </items>
+                    </headline>
+                    <description
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Description"
+                        sling:resourceSuperType="common/components/content/parent-dialog/cq:dialog/content/items/layout/items/description"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <bannertext
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                                        fieldLabel="Description"
+                                        name="./bannertext"
+                                        useFixedInlineToolbar="{Boolean}true"/>
+									<descSize
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/form/hidden"
+                                        fieldLabel="Description Size"
+                                        name="./descSize">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <small
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Small"
+                                                value=""/>
+                                            <large
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Large"
+                                                value="largeSize"/>
+                                        </items>
+                                    </descSize>
+                                </items>
+                            </column>
+                        </items>
+                    </description>
+                </items>
+            </layout>
+        </items>
+    </content>
+</jcr:root>
+contect.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Image Grid"
+    componentGroup="common"/>
+    editconfig:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig"/>
+    dialog.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Dialog"
+    xtype="dialog">
+    <items
+        jcr:primaryType="cq:Widget"
+        xtype="tabpanel">
+        <items jcr:primaryType="cq:WidgetCollection">
+            <tab1
+                jcr:primaryType="cq:Panel"
+                title="Tab 1">
+                <items jcr:primaryType="cq:WidgetCollection">
+                    <disclaimer
+                        jcr:primaryType="cq:Widget"
+                        fieldLabel="Disclaimer"
+                        name="./disclaimer"
+                        xtype="richtext">
+                        <rtePlugins jcr:primaryType="nt:unstructured">
+                            <format
+                                jcr:primaryType="nt:unstructured"
+                                features="bold,italic"/>
+                            <justify
+                                jcr:primaryType="nt:unstructured"
+                                features="justifyleft,justifycenter,justifyright"/>
+                            <lists
+                                jcr:primaryType="nt:unstructured"
+                                features="ordered,unordered"/>
+                            <links
+                                jcr:primaryType="nt:unstructured"
+                                features="modifylink,unlink"/>
+                            <edit
+                                jcr:primaryType="nt:unstructured"
+                                features="paste-plaintext"/>
+                            <misctools
+                                jcr:primaryType="nt:unstructured"
+                                features="[specialchars,sourceedit]"/>
+                        </rtePlugins>
+                    </disclaimer>
+                </items>
+            </tab1>
+        </items>
+    </items>
+</jcr:root>
+gridmodel.java:
+package com.tda.common.models;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue; 
+
+@Model(adaptables =  { SlingHttpServletRequest.class, Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class GridModuleModel {
+
+@ValueMapValue(name="fileReference", injectionStrategy = InjectionStrategy.DEFAULT)
+private String fileReference = "";
+
+@ValueMapValue(name="link", injectionStrategy = InjectionStrategy.DEFAULT)
+private String link = "";
+
+
+@ValueMapValue(name="altimgtext", injectionStrategy = InjectionStrategy.DEFAULT)
+private String altImgText = "";
+
+@ValueMapValue(name="figCaptionTitle", injectionStrategy = InjectionStrategy.DEFAULT)
+private String figCaptionTitle = "";
+
+@ValueMapValue(name="bannertext", injectionStrategy = InjectionStrategy.DEFAULT)
+private String figCaptionDesc = "";
+
+@ValueMapValue(name="textstyle", injectionStrategy = InjectionStrategy.DEFAULT)
+private String[] textStyle = new String[3];	
+
+@ValueMapValue(name="headlinecolor", injectionStrategy = InjectionStrategy.DEFAULT)
+private String headlineColor = "";
+
+@ValueMapValue(name="descriptioncolor", injectionStrategy = InjectionStrategy.DEFAULT)
+private String descriptionColor = "";
+
+public String getFileReference() {
+	return fileReference;
+}
+
+public String getAltImgText() {
+	return (altImgText == null ||"".equals(altImgText.trim())) ? "" : altImgText;
+}
+
+public String getLink() {
+	return TDACommonUtil.getValidPath(link);
+}
+
+public String getArrowLink() {
+	return (link == null ||"".equals(link.trim())) ? "" : "<span data class=\"list-arrow-right\"></span>";
+}
+
+public String getImgTag() {
+		return ("".equals(fileReference.trim())  || fileReference == null) ? "" :	"<img class=\"list-reasons-icon \" src=\""+ getFileReference() +"\" title=\""+getFigCaptionTitle()+"\" alt=\""+getAltImgText()+"\">";	
+	}
+
+
+public String getFigCaptionTitle() {
+	return (figCaptionTitle == null ||"".equals(figCaptionTitle.trim())) ? "" : figCaptionTitle;
+}
+
+public String getFigCaptionDesc() {
+	return (figCaptionDesc == null ||"".equals(figCaptionDesc.trim())) ? "" : figCaptionDesc;
+}
+
+public String getStyleTag() {
+    String styleTag = TDACommonUtil.getStyleTag(textStyle,headlineColor, "");	
+    return styleTag;    
+ }
+
+public String getDescriptioncolor() {
+		return descriptionColor;
+	}
+
+}
