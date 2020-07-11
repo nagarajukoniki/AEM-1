@@ -1,0 +1,275 @@
+tda_fw_modal.html:
+<sly data-sly-use.headerOverlayModel="com.tda.common.models.HeaderOverlayModel" /> ${headerOverlayModel.getEditMessage @ context='html'}
+<div class="WPSHTMLComponent">
+    <span>
+            <div id="modal_window" class="modal-overlay">
+               <button id="modal_close" class="btn-close" type="button"></button>
+               <div class="modal-show-container">
+                  <div class="modal-header pageSection--green">
+                  	 ${headerOverlayModel.getTitleTag @ context='html'}
+                     ${headerOverlayModel.getDescriptionTag @ context='html'}
+                  </div>
+                  <div class="modal-navigation-options">
+                  	 ${headerOverlayModel.getFirstCtaTag @ context='html'}
+                     ${headerOverlayModel.getSecondCtaTag @ context='html'}
+                     ${headerOverlayModel.getThirdCtaTag @ context='html'}
+                  </div>
+               </div>
+            </div>
+         </span>
+</div>
+HeaderOverlayModel.java:
+package com.tda.common.models;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.day.cq.wcm.api.WCMMode;
+
+@Model(adaptables = { SlingHttpServletRequest.class,
+		Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class HeaderOverlayModel extends TDAComponentNames {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(HeaderOverlayModel.class);
+	
+	@ValueMapValue(name = "title", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String title = "";
+	
+	@ValueMapValue(name = "description", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String description = "";
+
+	@ValueMapValue(name = "ctafirstlabel", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaFirstLabel = "";
+
+	@ValueMapValue(name = "ctafirstlink", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaFirstLink = "";
+	
+	@ValueMapValue(name = "ctafirstlinkurlnewwindow", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String isCtaFirstLinkPageNewWin = "";
+	
+	@ValueMapValue(name = "ctasecondlabel", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaSecondLabel = "";
+
+	@ValueMapValue(name = "ctasecondlink", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaSecondLink = "";
+	
+	@ValueMapValue(name = "ctasecondlinkurlnewwindow", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String isCtaSecondLinkPageNewWin = "";
+	
+	@ValueMapValue(name = "ctathirdlabel", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaThirdLabel = "";
+
+	@ValueMapValue(name = "ctathirdlink", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String ctaThirdLink = "";
+	
+	@ValueMapValue(name = "ctathirdlinkurlnewwindow", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String isCtaThirdLinkPageNewWin = "";
+
+	
+	
+	/**
+	 * The post construction will be executed on model instantiation. It is used to initialize the values.
+	 */
+	@PostConstruct
+	public void init() {
+		LOGGER.debug("In init method");
+		mode = WCMMode.fromRequest(request);
+	}
+	
+	 /**
+     * The getter method evaluates title html tag if title is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getTitleTag() {
+       String titleTag = "";
+       if(title == null ||"".equals(title.trim())){
+    	   titleTag = "";
+       } else {
+    	   titleTag = "<h1 class=\"modal-heading\">"+title.trim()+"</h1>";
+       }
+       return titleTag;
+	}
+	
+	/**
+     * The getter method evaluates description html tag if description is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getDescriptionTag() {
+	   String descriptionTag = "";
+	   if(description == null ||"".equals(description.trim())){
+		   descriptionTag = "";
+	   } else {
+		   descriptionTag = "<p class=\"modal-subheading\">"+description.trim()+"</p>";
+	   }
+	   return descriptionTag;
+	}
+	
+	/**
+     * The getter method evaluates First modal cta html tag if cta first link is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getFirstCtaTag() {
+	   return TDACommonUtil.getModalLinkTag(ctaFirstLink, "modal-navigation-link", ctaFirstLabel, "link-title", "navigation-arrow-right",getCtaLinkPageNewWin(isCtaFirstLinkPageNewWin));
+	}
+	
+	
+	/**
+     * The getter method evaluates Second modal cta html tag if cta second link is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getSecondCtaTag() {
+	   return TDACommonUtil.getModalLinkTag(ctaSecondLink, "modal-navigation-link", ctaSecondLabel, "link-title", "navigation-arrow-right",getCtaLinkPageNewWin(isCtaSecondLinkPageNewWin));
+	}
+	
+	/**
+     * The getter method evaluates Third modal cta html tag if cta third link is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getThirdCtaTag() {
+	   return TDACommonUtil.getModalLinkTag(ctaThirdLink, "modal-navigation-link", ctaThirdLabel, "link-title", "navigation-arrow-right",getCtaLinkPageNewWin(isCtaThirdLinkPageNewWin));
+	}
+	/**
+     * The getter method evaluates Third modal cta html tag if cta third link is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getCtaLinkPageNewWin(String isNewWin) {
+		return "false".equals(isNewWin) ? "_self" : "_blank";
+	}
+   	
+}
+
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Global FW Modal"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/tabs">
+        <items jcr:primaryType="nt:unstructured">
+            <general
+                jcr:primaryType="nt:unstructured"
+                jcr:title="General"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                    margin="{Boolean}false"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <column
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <title
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Title"
+                                name="./title"/>
+                            <description
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                                fieldLabel="Description"
+                                name="./description"/>
+                            <ctafirstlabel
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="CTA Label (First)"
+                                name="./ctafirstlabel"/>
+                            <ctafirstlink
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                fieldDescription="Browse Page Path"
+                                fieldLabel="CTA Link (First)"
+                                name="./ctafirstlink"
+                                rootPath="/content/workplace"/>
+							<ctafirstlinkurlnewwindow
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                checked="{Boolean}true"
+                                name="./ctafirstlinkurlnewwindow"
+                                text=" CTA Link (First) Open in new window? "
+                                uncheckedValue="false"
+                                value="true"/>
+                            <ctasecondlabel
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="CTA Label (Second)"
+                                name="./ctasecondlabel"/>
+                            <ctasecondlink
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                fieldDescription="Browse Page Path"
+                                fieldLabel="CTA Link (Second)"
+                                name="./ctasecondlink"
+                                rootPath="/content/workplace"/>
+							<ctasecondlinkurlnewwindow
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                checked="{Boolean}true"
+                                name="./ctasecondlinkurlnewwindow"
+                                text=" CTA Link (Second) Open in new window? "
+                                uncheckedValue="false"
+                                value="true"/>
+                            <ctathirdlabel
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="CTA Label (Third)"
+                                name="./ctathirdlabel"/>
+                            <ctathirdlink
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                fieldDescription="Browse Page Path"
+                                fieldLabel="CTA Link (Third)"
+                                name="./ctathirdlink"
+                                rootPath="/content/workplace"/>
+							<ctathirdlinkurlnewwindow
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                checked="{Boolean}true"
+                                name="./ctathirdlinkurlnewwindow"
+                                text="CTA Link (Third) Open in new window? "
+                                uncheckedValue="false"
+                                value="true"/>
+                        </items>
+                    </column>
+                </items>
+            </general>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="Modal popup dialog to be linked to the Let's Talk button."
+    jcr:primaryType="cq:Component"
+    jcr:title="Lets talk Overlay Modal "
+    componentGroup="TDA Common"/>
+    editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+</jcr:root>
+
