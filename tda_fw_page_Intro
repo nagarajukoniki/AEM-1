@@ -1,0 +1,329 @@
+tda_fw_page_Intro.html:
+<sly data-sly-use.pageHeaderModel="com.tda.common.models.PageHeaderModel" />
+${pageHeaderModel.getEditMessage @ context='html'}
+<div class="WPSHTMLComponent">
+   <span>
+      <header class="pageHeader">
+         <div class="pageHeader_info">
+            <div class="contentWrapper">
+               <div class="pageHeader_info_content">
+                  ${pageHeaderModel.getTitleTag @ context='html'}
+                  <p class="pageHeader_message"> ${pageHeaderModel.getSubTitle @ context='html'}</p>
+                  <div class="pageHeader_text">
+						${pageHeaderModel.getDescription @ context='html'}
+                        ${pageHeaderModel.getCtaLinkTag @ context='html'}
+                  </div>
+               </div>
+			   ${pageHeaderModel.getMediaTag @ context='unsafe'}
+            </div>
+         </div>
+      </header>
+   </span>
+</div>
+PageHeaderModel.java:
+package com.tda.common.models;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.day.cq.wcm.api.WCMMode;
+
+@Model(adaptables = { SlingHttpServletRequest.class,
+		Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class PageHeaderModel extends TDAComponentNames {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PageHeaderModel.class);
+	
+	@ValueMapValue(name = "title", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String title = "";
+	
+	@ValueMapValue(name = "subtitle", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String subTitle = "";
+
+	@ValueMapValue(name = "description", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String description = "";
+
+	@ValueMapValue(name = "mediatype", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String mediaType = "";
+
+	@ValueMapValue(name = "videoid", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String videoId = "";
+	
+	@ValueMapValue(name = "videotitle", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String videotitle = "";
+
+	@ValueMapValue(name = "svgimage", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String svgImage = "";
+	
+	@ValueMapValue(name = "linktext", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String linkText = "";
+
+	@ValueMapValue(name = "pagepath", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String pagePath = "";
+	
+	@ValueMapValue(name = "urlnewwindow", injectionStrategy = InjectionStrategy.DEFAULT)
+	private String isPageNewWin = "";
+	
+	/**
+	 * The post construction will be executed on model instantiation. It is used to initialize the values.
+	 */
+	@PostConstruct
+	public void init() {
+		LOGGER.debug("In init method");
+		mode = WCMMode.fromRequest(request);
+	}
+	
+	 /**
+     * The getter method evaluates title html tag if title is non empty. Defaulted to empty.
+     * 	
+     * @return 
+     */
+	public String getTitleTag() {
+       String titleTag = "";
+       if(title == null ||"".equals(title.trim())){
+    	   titleTag = "";
+       } else {
+    	   titleTag = "<h1 class=\"pageHeader_title\">"+title+"</h1>";
+       }
+       return titleTag;
+	}
+	
+    /**
+    * The getter method retrieves the sub title associated with the resource. Defaulted to empty.
+    * 
+    * @return 
+    */
+    public String getSubTitle() {
+    	return subTitle == null ? "":subTitle.trim();
+    }
+    
+    /**
+     * The getter method retrieves the description associated with the resource. Defaulted to empty.
+     * 
+     * @return 
+     */
+     public String getDescription() {
+     	return description == null ? "":description.trim();
+     }
+     
+     /**
+      * The getter method retrieves the mediatype associated with the resource. Defaulted to empty.
+      * 
+      * @return 
+      */
+      public String getMediaType() {
+      	return mediaType == null ? "":mediaType.trim();
+      }
+      
+     /**
+      * The getter method retrieves the video id associated with the resource. Defaulted to empty.
+      * 
+      * @return 
+      */
+      public String getVideoId() {
+      	return videoId == null ? "":videoId.trim();
+      }
+      
+      /**
+       * The getter method retrieves the video id associated with the resource. Defaulted to empty.
+       * 
+       * @return 
+       */
+       public String getSvgImage() {
+       	return svgImage == null ? "":svgImage.trim();
+       }
+
+       
+       /**
+       * The getter method retrieves the page path target window based on the checkbox associated with the resource. Defaulted to empty.
+       *
+       * @return Target window.
+       */
+       public String getPagePathTarget() {
+    	   return isPageNewWin == null || "".equals(isPageNewWin) ? "_self" : "_blank";
+       }
+       
+	   	/**
+	     * The getter method retrieves the link text associated with the resource. Defaulted to empty.
+	     * 
+	     * @return 
+	     */
+		public String getLinkText() {
+			return linkText == null ? "":linkText.trim();
+		}
+      
+	   	
+	   	/**
+	     * The getter method wraps Cta Link tag including extension based on the page path. Defaulted to empty.
+	     * 
+	     * @return CTA Link anchor tag.
+	     */
+	   	public String getCtaLinkTag() {
+	   		String anchorTag = "";
+	   		String titlePath =  TDACommonUtil.getValidPath(pagePath);
+	   		if("".equals(titlePath)) {
+	   			anchorTag = getLinkText();
+	   		} else {
+	   			anchorTag  = "<div class=\"pageHeader-cta-container\"><a class=\"cta-info-btn\" href=\""+titlePath+"\" target=\""+getPagePathTarget()+"\">"+getLinkText()+"</a></div>";
+	   		}
+	   		return anchorTag;
+	   	}
+       
+       /**
+        * The getter method builds media tag based on mediatype selected. Defaulted to empty.
+        * 
+        * @return 
+        */
+       public String getMediaTag() {
+         	StringBuffer mediaTag = new StringBuffer();
+         	if("video".equals(mediaType)) {
+	         	mediaTag.append("<div class=\"pageHeader_video\">");
+	         	mediaTag.append("<div class=\"pageHeader_video_inner_container\">");
+	         	mediaTag.append("<div class=\"brightcoveVideoWrapper\">");
+	         	mediaTag.append("<video class=\"video-js\" style=\"left: 0px; top: 0px; right: 0px; bottom: 0px; position: absolute;\" controls=\"controls\" width=\"100%\" height=\"100%\" data-application-id=\"\" data-embed=\"default\" data-player=\"default\" data-account=\"5367332890001\" data-video-id=\""+videoId+"\"></video>");
+	         	mediaTag.append("<script src=\"https://players.brightcove.net/5367332890001/default_default/index.min.js\"></script>");
+	         	mediaTag.append("</div>");
+	         	mediaTag.append("</div>");
+	         	mediaTag.append(" <div class=\"videoWrapper_description\">");
+	         	mediaTag.append(videotitle);
+	         	mediaTag.append("</div>");
+	         	mediaTag.append("</div>");
+	         	mediaTag.append("");
+         	} else if("svgimage".equals(mediaType)) {
+         		mediaTag.append("<div class=\"pageHeader_info_graphic pageHeader_info_graphic--designated-brokerage-services\" data-js-component=\"svgAnimation\" data-animation-name=\""+svgImage+"\">&nbsp;</div>");
+         	}     		
+         	return mediaTag.toString();
+       }
+
+}
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Global FW Page Intro"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/tabs">
+        <items jcr:primaryType="nt:unstructured">
+            <general
+                jcr:primaryType="nt:unstructured"
+                jcr:title="General"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                    margin="{Boolean}false"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <column
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <title
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Title"
+                                name="./title"/>
+                            <subtitle
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Subtitle"
+                                name="./subtitle"/>
+                            <description
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceSuperType="common/components/content/tda_rich_text_editor/cq:dialog/content/items/container/items/text/items/column/items/text"
+                                sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+								fieldLabel="Description"
+                                name="./description"
+                                removeSingleParagraphContainer="{Boolean}true"
+                                useFixedInlineToolbar="{Boolean}true"/>
+                            <linktext
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="CTA Link Text"
+                                name="./linktext"/>
+                            <pagepath
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                fieldDescription="Browse page path"
+                                fieldLabel="CTA URL"
+                                name="./pagepath"
+                                rootPath="/content/workplace"/>
+                            <urlnewwindow
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                name="./urlnewwindow"
+                                text="Open in new window?"
+                                value="false"/>
+                            <mediatype
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                fieldLabel="Media Type"
+                                name="./mediatype">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <video
+                                        jcr:primaryType="nt:unstructured"
+                                        text="Video"
+                                        value="video"/>
+                                    <svg
+                                        jcr:primaryType="nt:unstructured"
+                                        text="SVG Image"
+                                        value="svgimage"/>
+                                </items>
+                            </mediatype>
+                            <videoid
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Video Id"
+                                name="./videoid"/>
+                            <videotitle
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Video Title"
+                                name="./videotitle"/>
+                             <svgimage
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                fieldLabel="SVG Name"
+                                name="./svgimage">
+                                <datasource
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="/bin/dynamicdropdown"
+                                    addNone="{Boolean}true"
+                                    resourcePath="/content/drop-downs/svg-name"/>
+                            </svgimage>
+                        </items>
+                    </column>
+                </items>
+            </general>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="A page header with title, text, CTA and either a large SVG or video."
+    jcr:primaryType="cq:Component"
+    jcr:title="Global FW Page Intro"
+    componentGroup="TDA Common"/>
+    editconfig.xml;
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+</jcr:root>
