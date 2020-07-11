@@ -1,0 +1,231 @@
+tda_fw_accordion.html:
+<sly data-sly-use.faq="com.tda.common.models.FAQ" /> ${faq.getEditMessage @ context='html'}
+<div class="WPSHTMLComponent" id="${properties.contentAnchorId}">
+    <span>
+				<section class="pageSection pageSection--white ${faq.getFAQStickyBannerTheme} Events-Carousel">
+					<div class="contentWrapper">
+						<header class="pageSection_header">
+							<h2 class="pageSection_title pageSection_title--nospace Page-Nav-Section-Text">${faq.getTitle}</h2>
+						</header>
+						<div class="pageSection_body">
+							<div class="faqs" data-js-component="accordion" data-sly-list.faqList="${faq.faqBeanArray}">
+								<div class="faq ${faqList.getFaqOpenValue}" >
+									<div class="faq_question js--accordion_trigger">${faqList.question}</div>
+									<div class="faq_answer">
+										<p>${faqList.answer @ context='html'}</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</span>
+</div>
+FAQ.java:
+package com.tda.common.models;
+
+import com.day.cq.wcm.api.WCMMode;
+import java.util.ArrayList;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ChildResource;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import com.tda.common.beans.FAQBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Model(adaptables =  { SlingHttpServletRequest.class, Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class FAQ extends TDAComponentNames {
+	private ArrayList<FAQBean> faqBeanArray=new ArrayList<FAQBean>();
+	public static final String QUESTION_TEXT = "question";
+	public static final String ANSWER_TEXT = "answer";
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FAQ.class);
+		@ValueMapValue(name = "title", injectionStrategy = InjectionStrategy.DEFAULT)
+		private String title = "";
+		
+		@ValueMapValue(name = "stickybanner", injectionStrategy = InjectionStrategy.DEFAULT)
+		private String stickybanner = "false";
+	
+		
+		@ChildResource(injectionStrategy = InjectionStrategy.OPTIONAL)
+		private Resource faqlist;
+		
+		@PostConstruct
+		public void init(){
+			try {
+				mode = WCMMode.fromRequest(request);
+				Node currentNode = null;
+				if(faqlist != null) {
+					currentNode = faqlist.adaptTo(Node.class);
+				}
+				if(currentNode!=null) {
+					if(currentNode.hasNodes()) {
+						NodeIterator childNodes =currentNode.getNodes();
+						if(childNodes.hasNext()) {
+							FAQBean fistFaqBean = new FAQBean();
+							Node faq = (Node) childNodes.next();
+							fistFaqBean.setQuestion(faq.hasProperty(QUESTION_TEXT)?faq.getProperty(QUESTION_TEXT).getString():"");
+							fistFaqBean.setAnswer(faq.hasProperty(ANSWER_TEXT)?faq.getProperty(ANSWER_TEXT).getString():"");
+							fistFaqBean.setFaqOpenValue("_is_open");
+							faqBeanArray.add(fistFaqBean);	
+						}
+						while (childNodes.hasNext()) {
+							FAQBean faqBean = new FAQBean();
+							Node faq = (Node) childNodes.next();
+							faqBean.setQuestion(faq.hasProperty(QUESTION_TEXT)?faq.getProperty(QUESTION_TEXT).getString():"");
+							faqBean.setAnswer(faq.hasProperty(ANSWER_TEXT)?faq.getProperty(ANSWER_TEXT).getString():"");
+							faqBean.setFaqOpenValue("");
+							faqBeanArray.add(faqBean);				
+						}
+					}
+				}
+			}catch(Exception e){
+			LOGGER.error("Error in FAQ class:"+e);
+		}
+			
+		}
+
+	/**
+    * The getter method retrieves the list of faq  as bean objects evaluated in the model initialization.
+    *
+    * @return list of faq 
+    */
+	public ArrayList<FAQBean> getFaqBeanArray() {
+			return faqBeanArray;
+	}
+	/**
+     * The getter method retrieves the title associated with the FAQ. Defaulted to empty.
+     * 
+     * @return 
+     */
+	public String getTitle() {
+		return title;
+	}
+	
+	
+	public String getFAQStickyBannerTheme() {
+		 String themeClass="";
+		 
+		if(stickybanner.equals("true")&& stickybanner!=null)
+			themeClass="Page-Nav-Section";
+		return themeClass;
+	}
+
+	public void setStickybanner(String stickybanner) {
+		this.stickybanner = stickybanner;
+	}
+
+	
+}
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Global FW Accordion Text"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/tabs">
+        <items jcr:primaryType="nt:unstructured">
+            <general
+                jcr:primaryType="nt:unstructured"
+                jcr:title="General"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                    margin="{Boolean}false"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <column
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <title
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldDescription="Title"
+                                fieldLabel="Title"
+                                name="./title"/>
+							<contentAnchorId
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Content Anchor ID"
+                                name="./contentAnchorId"/>
+							<stickybanner
+								jcr:primaryType="nt:unstructured"
+								sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+								defaultChecked="{Boolean}false"
+								fieldDescription="When checkbox checked, the Title of the component shows in sticky bannner"
+								name="./stickybanner"
+								text="Display Title in the Sticky Banner Navigation"
+								uncheckedValue="false"
+								value="{Boolean}true"/>
+							 <stickybannercheck
+								jcr:primaryType="nt:unstructured"
+								sling:resourceType="granite/ui/components/coral/foundation/form/hidden"
+								fieldDescription="When checkbox checked, the Title of the component shows in sticky bannner"
+								name="./stickybanner@TypeHint"
+								text="Display Title in the Sticky Banner Navigation"/>
+                            <multifieldcollection
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                composite="{Boolean}true"
+                                fieldDescription="Click + to add a new page"
+                                fieldLabel="FAQ Question and Answer"
+                                name="./multiCol">
+                                <field
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container"
+                                    name="./faqlist">
+                                    <items jcr:primaryType="nt:unstructured">
+                                        <question
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                            fieldDescription="Question"
+                                            fieldLabel="Question"
+                                            name="./question"/>
+                                        <answer
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="cq/gui/components/authoring/dialog/richtext"
+											sling:resourceSuperType="/apps/common/components/content/tda_rich_text_editor/cq:dialog/content/items/container/items/text/items/column/items/text"
+                                            fieldLabel="Answer"
+                                            name="./answer"
+                                            useFixedInlineToolbar="{Boolean}true"/>
+                                    </items>
+                                </field>
+                            </multifieldcollection>
+                        </items>
+                    </column>
+                </items>
+            </general>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Global FW Accordion Text"
+	jcr:description="Multiset of title collapsible descriptions used for implementing accordion-style FAQs."
+    componentGroup="TDA Common"/>
+    cq.editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:dialogMode="floating"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:listeners
+        jcr:primaryType="cq:EditListenersConfig"
+        afterdelete="REFRESH_PARENT"
+        afteredit="REFRESH_PAGE"
+        afterinsert="REFRESH_PAGE"/>
+</jcr:root>
