@@ -1,0 +1,952 @@
+SendEmailProcess.java:
+package com.tda.common.workflows;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.jcr.resource.api.JcrResourceConstants;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.adobe.acs.commons.email.EmailService;
+import com.adobe.acs.commons.wcm.AuthorUIHelper;
+import com.day.cq.commons.Externalizer;
+import com.day.cq.dam.api.Asset;
+import com.day.cq.dam.commons.util.DamUtil;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.workflow.WorkflowException;
+import com.day.cq.workflow.WorkflowSession;
+import com.day.cq.workflow.exec.HistoryItem;
+import com.day.cq.workflow.exec.WorkItem;
+import com.day.cq.workflow.exec.WorkflowData;
+import com.day.cq.workflow.exec.WorkflowProcess;
+import com.day.cq.workflow.metadata.MetaDataMap;
+import com.tda.common.utils.SendEmailConstants;
+import com.tda.common.utils.WorkflowUtils;
+
+@Component(name = "Send Email Process", service = WorkflowProcess.class,immediate = true, property = {
+"process.label=Send Email Process" },configurationPid = "com.tda.common.workflows.SendEmailProcess")
+
+@Designate(ocd = SendEmailProcess.URLConfiguration.class)
+public class SendEmailProcess implements WorkflowProcess {
+	
+    private static final Logger log = LoggerFactory.getLogger(SendEmailProcess.class);
+    
+    /* OSGI Configurations */
+    @ObjectClassDefinition(name="WPS Publishing Workflow Configurations")
+    public @interface URLConfiguration {
+	    @AttributeDefinition(
+		    name = "Stage_And_Live_URLMapper",
+		    description = "Stage and Live URL Mapper",
+		    type = AttributeType.STRING
+	    )
+	    String[] urlList() default {};
+    }
+    
+    @Activate
+	public void activate(URLConfiguration config) {
+    	urlArray = config.urlList();
+	}
+
+    private String[] urlArray;
+    private String[] urlOsgiArray;
+    
+    /**
+     * Service used to get Sling Osgi configurations
+     */
+    @Reference
+    private ConfigurationAdmin configAdmin;
+
+    /**
+     * Service used to send the email
+     */
+    @Reference
+    private EmailService emailService;
+
+    /**
+     * Service used to generate a link to the payload on author environment
+     */
+    @Reference
+    private AuthorUIHelper authorUIHelper;
+
+    @Reference
+    private ResourceResolverFactory resourceResolverFactory;
+
+    /**
+     * used to generate a link to the payload on publish environment
+     */
+    @Reference
+    private Externalizer externalizer;
+    
+    public static final String WORKFLOW_MODEL_NAME = "workflowModel";
+
+   
+    @Override
+    public final void execute(WorkItem workItem, WorkflowSession workflowSession,
+            MetaDataMap metaData) throws WorkflowException {
+    	
+        final WorkflowData workflowData = workItem.getWorkflowData();
+        final String type = workflowData.getPayloadType();
+        if (!StringUtils.equals(type, "JCR_PATH")) {
+            return;
+        }
+        
+        /* Get Stage and Live Urls Sling OSGI Configurations */
+        try {
+        	Configuration configOsgi = configAdmin.getConfiguration("com.tda.common.workflows.SendEmailProcess");
+        	if(configOsgi != null && configOsgi.getProperties() != null) {
+        		urlOsgiArray = (String[])configOsgi.getProperties().get("Stage_And_Live_URLMapper");
+        		if(urlOsgiArray == null || urlOsgiArray.length == 0) {
+        			/* Default to osgi configuration unless sling environment specific configurations presented*/
+        			urlOsgiArray = urlArray;
+        		}
+        	}
+        	
+        } catch(IOException ex) {
+        	/*Assign to osgi configuration if any exception*/
+        	urlOsgiArray = urlArray;
+        }
+      
+        String[] args = buildArguments(metaData);
+
+        /* process arguments */
+        String emailTemplate = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.TEMPLATE.getArgumentName(), args);
+        String approverGroup = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.APPROVER_GROUP_NAME.getArgumentName(), args);
+        String projectKey = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.PROJECT.getArgumentName(), args);
+        String stageUrl = getURLByKey(projectKey+"-StageURL");
+        String liveUrl = getURLByKey(projectKey+"-LiveURL");
+        
+        log.info("stageUrl:"+stageUrl);
+        log.info("liveUrl:"+liveUrl);
+        log.info("projectKey:"+projectKey);
+       
+        if (emailTemplate == null) {            
+            emailTemplate = "/etc/notification/email/workplace/wps-default-email-template.txt";
+        }  
+        
+        /* set date format to be used in emails */
+        String sdfParam = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.DATE_FORMAT.getArgumentName(), args);
+        SimpleDateFormat sdf = getSimpleDateFormat(sdfParam);
+        
+        /* Get the path to the JCR resource from the payload */
+        final String payloadPath = workflowData.getPayload().toString();
+        
+        /* Get ResourceResolver */
+        final Map<String, Object> authInfo = new HashMap<>();
+        authInfo.put(JcrResourceConstants.AUTHENTICATION_INFO_SESSION,
+                workflowSession.getSession());
+        ResourceResolver resourceResolver = null;
+
+        try {
+           resourceResolver = resourceResolverFactory.getResourceResolver(authInfo);
+            Resource payloadRes = resourceResolver.getResource(payloadPath);
+            ResourceResolver resolverResolver = payloadRes.getResourceResolver();
+            String fullName= WorkflowUtils.getFullNameFromUserPath(resolverResolver, workItem.getWorkflow().getInitiator()); 
+            String workflowTitle=workItem.getWorkflowData().getMetaDataMap().get("workflowTitle")!=null?workItem.getWorkflowData().getMetaDataMap().get("workflowTitle").toString():"";
+            Map<String, String> emailParams =
+                    getEmailParams(workItem, workflowSession, sdf, payloadPath, payloadRes);
+            emailParams.put(SendEmailConstants.WF_USER_FULL_NAME, fullName);  
+            log.info("is Asset DAM:"+DamUtil.isAsset(payloadRes));
+            if (DamUtil.isAsset(payloadRes)) {
+            	 emailParams.put(SendEmailConstants.STAGE_LINK, stageUrl+payloadPath); 
+                 emailParams.put(SendEmailConstants.PUBLISH_LINK, liveUrl+payloadPath);	           
+            }else {
+            	emailParams.put(SendEmailConstants.STAGE_LINK, stageUrl+payloadPath+".html"); 
+ 	            emailParams.put(SendEmailConstants.PUBLISH_LINK, liveUrl+payloadPath+".html");
+            }
+            emailParams.put(SendEmailConstants.WF_TITLE,workflowTitle);
+            if("initiator".equals(approverGroup))
+            	approverGroup=workItem.getWorkflow().getInitiator();
+           
+            log.info("email params:"+ approverGroup);
+            approverGroup=approverGroup.replaceAll("initiator",  workItem.getWorkflow().getInitiator());
+            log.info("email params:"+ approverGroup);
+            log.info("Email Template:"+emailTemplate);
+            
+            /* get email addresses based on CQ user or group */
+            String[] emailTo = getEmailAddrs(approverGroup, payloadRes);
+           
+            List<String> failureList=  emailService.sendEmail(emailTemplate, emailParams, emailTo);
+            if (failureList.isEmpty() && failureList != null) {
+                log.info("Email sent successfully to {} recipients", emailTo.length);
+            } else {
+                StringBuilder emailBuilder = new StringBuilder();
+                for (String emailToIndividualAddress : emailTo) {
+                    emailBuilder.append(emailToIndividualAddress).append('|');
+                }
+                log.error("Email sent failed to {} ", emailBuilder.toString());
+            }            
+        } catch (LoginException e) {
+            log.error("Could not acquire a ResourceResolver object from the Workflow Session's JCR Session: {}", e);
+        } finally {
+            if (resourceResolver != null && resourceResolver.isLive()) {
+                resourceResolver.close();
+            }
+        }
+    }
+
+    /**
+     * This method returns the email Params that can be used in the email Template.
+     *
+     * @param workItem        workItem from the workflow.
+     * @param workflowSession workflow session
+     * @param sdf             simple date formatter
+     * @param payloadPath     payload path as part of the workflow
+     * @param payloadRes      payload resource
+     * @return map of email params to be sent to the email template
+     * @throws WorkflowException
+     */
+    private Map<String, String> getEmailParams(WorkItem workItem, WorkflowSession workflowSession,
+            SimpleDateFormat sdf, String payloadPath, Resource payloadRes)
+            throws WorkflowException {
+    	
+        /* Email Parameter map */
+        Map<String, String> emailParams = new HashMap<>();
+
+        /* Set jcr path */
+        emailParams.put(org.apache.jackrabbit.JcrConstants.JCR_PATH, payloadPath);
+
+        /* Get Payload params */
+        Map<String, String> payloadProp = WorkflowUtils.getPayloadProperties(payloadRes, sdf);
+        if (payloadProp != null) {
+        	log.info("Map payloadProp:"+payloadProp);
+            emailParams.putAll(payloadProp);
+        }
+
+        /* Get Url params */
+        Map<String, String> urlParams = getURLs(payloadRes);
+        if (urlParams != null) {
+            emailParams.putAll(urlParams);
+        }
+        addCommentsToEmailParams(workItem, workflowSession, emailParams);
+
+
+        /* Get Additional Parameters to add */
+        Map<String, String> wfParams = getAdditionalParams(workItem);
+        if (wfParams != null) {
+            emailParams.putAll(wfParams);
+        }
+
+        /* Get the current date and add to email Params. */
+        String fmtDate = WorkflowUtils.formatDate(Calendar.getInstance(), sdf);
+        emailParams.put("emailTime", fmtDate);
+        return emailParams;
+    }
+
+    /**
+     * This method gets the last comment provided by the workflow user while completing that step
+     * and place that in the emailParams to use it in the emailTemplate.
+     *
+     * @param workItem        workItem of the workflow
+     * @param workflowSession workflow session
+     * @param emailParams     email params in which comments needs to be added
+     * @throws WorkflowException
+     */
+    private void addCommentsToEmailParams(WorkItem workItem, WorkflowSession workflowSession,
+            Map<String, String> emailParams) throws WorkflowException {
+    	
+        /* Get the comments section from the last completed step and send it in an email.
+           Get the current workflow. */
+        List<HistoryItem> historyList = workflowSession.getHistory(workItem.getWorkflow());
+        int listSize = historyList.size();
+        HistoryItem lastItem = historyList.get(listSize - 1);
+        String comment = lastItem.getComment();
+        if (StringUtils.isNotBlank(comment)) {
+            emailParams.put("comment", comment);
+            log.info("Previous Workflow Comment = {}", comment);
+        } else {
+            emailParams.put("comment", "");
+            log.info("Previous Workflow Comment = null or ''");
+        }
+    }
+
+    /***
+     * Gets a String[] of email addresses to send the email to. By default calls
+     * {@link com.adobe.acs.commons.email.process.impl.SendTemplatedEmailUtils#getEmailAddrsFromUserPath(ResourceResolver, String)}
+     * Protected so that it can be overridden by implementing classes to add
+     * unique logic to where emails are routed to.
+     *
+     * @param workItem        the current WorkItem in the workflow
+     * @param payloadResource the current payload as a Resource
+     * @param args            process arguments configured by the workflow step
+     * @return String[] of email addresses
+     */
+    protected String[] getEmailAddrs(String groupName, Resource payloadResource) {
+        ResourceResolver resolver = payloadResource.getResourceResolver();
+        return WorkflowUtils.getEmailAddrsFromUserPath(resolver, groupName);
+    }
+
+    /**
+     * Returns a Map<String, String> of additional parameters that will be added
+     * to the full list of email parameters that is sent to the EmailService. By
+     * default adds the Workflow Title:
+     * {@link com.adobe.acs.commons.email.process.impl.SendTemplatedEmailConstants#WF_MODEL_TITLE
+     * WF_MODEL_TITLE} and adds the Workflow Step Title:
+     * {@link com.adobe.acs.commons.email.process.impl.SendTemplatedEmailConstants#WF_STEP_TITLE
+     * WF_STEP_TITLE}
+     * {@link com.adobe.acs.commons.email.process.impl.SendTemplatedEmailConstants#WF_INITIATOR
+     * WF_INITIATOR} Protected so that implementing classes can override and
+     * add additional parameters.
+     *
+     * @param workItem workItem from the workflow
+     * @return map of additional parameters to be added to email params
+     */
+    protected Map<String, String> getAdditionalParams(WorkItem workItem) throws WorkflowException {
+        Map<String, String> wfParams = new HashMap<>();
+        String workflowTitle = workItem.getNode().getTitle();
+        String workflowEmailSubject = "Publish to Stage";
+        wfParams.put(SendEmailConstants.WF_EMAIL_SUBJECT, workflowEmailSubject);
+        wfParams.put(SendEmailConstants.WF_STEP_TITLE, workflowTitle);
+        wfParams.put(SendEmailConstants.WF_MODEL_TITLE,
+                workItem.getWorkflow().getWorkflowModel().getTitle());
+        /* Set workflow initiator */
+        wfParams.put(SendEmailConstants.WF_INITIATOR, workItem.getWorkflow().getInitiator());
+        return wfParams;
+    }
+
+    /***
+     * Uses the AuthorUIHelper to generate links to the payload on author Uses
+     * Externalizer to generate links to the payload on publish
+     *
+     * @param payloadRes pay load resource
+     * @return the url params with the resolved page path or asset path.
+     */
+    private Map<String, String> getURLs(Resource payloadRes) {
+    	
+        Page page;
+        Asset asset;
+        Map<String, String> urlParams = new HashMap<>();
+        if (payloadRes == null) {
+            return urlParams;
+        }
+
+        String payloadPath = payloadRes.getPath();
+        ResourceResolver resolver = payloadRes.getResourceResolver();
+        String authorInboxUrl =   externalizer.authorLink(resolver,"/aem/inbox");
+                  urlParams.put(SendEmailConstants.AUTHOR_INBOX_LINK, authorInboxUrl);
+                  log.info("authorUIHelper:"+authorInboxUrl);
+                  log.info("payloadPath:"+payloadPath);
+
+        page=resolver.getResource(payloadPath).adaptTo(Page.class);       
+        if (DamUtil.isAsset(payloadRes)) {
+        	asset=resolver.getResource(payloadPath).adaptTo(Asset.class);
+            /* add publish url */
+            String publishUrl = externalizer.publishLink(resolver, payloadPath);
+            urlParams.put(SendEmailConstants.PUBLISH_LINK, publishUrl);
+            if(asset.getName()!=null){
+             urlParams.put(SendEmailConstants.ASSET_PAGE, asset.getName());
+			}
+            String assetDetailsUrl =
+                    authorUIHelper.generateEditAssetLink(payloadPath, true, resolver);
+            urlParams.put(SendEmailConstants.AUTHOR_LINK, assetDetailsUrl);
+
+
+        } else {
+            /* add publish url */
+            String publishUrl = externalizer.publishLink(resolver, payloadPath + ".html");
+            urlParams.put(SendEmailConstants.PUBLISH_LINK, publishUrl);
+            urlParams.put(SendEmailConstants.ASSET_PAGE, page.getName());
+            String pageDetailsUrl =
+                    authorUIHelper.generateEditPageLink(payloadPath, true, resolver);
+            urlParams.put(SendEmailConstants.AUTHOR_LINK, pageDetailsUrl);
+
+
+        }
+
+        return urlParams;
+    }
+
+    /***
+     * @param metaData metadata
+     * @return the arguments string array
+     */
+    private String[] buildArguments(MetaDataMap metaData) {
+        /* the 'old' way, ensures backward compatibility */
+        String processArgs = metaData.get(WorkflowUtils.Arguments.PROCESS_ARGS.getArgumentName(), String.class);
+        if (StringUtils.isNotBlank(processArgs)) {
+            return processArgs.split(",");
+        } else {
+            return new String[0];
+        }
+    }
+
+    /***
+     * Set the format to be used for displaying dates in the email Defaults to
+     * format of 'yyyy-MM-dd hh:mm a'
+     *
+     * @param formatString workflow process argument to override default format
+     * @return SimpleDateFormat that will be used to convert jcr Date properties
+     * to Strings
+     */
+    private SimpleDateFormat getSimpleDateFormat(String formatString) {
+        SimpleDateFormat defaultFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+
+        if (StringUtils.isBlank(formatString)) {
+            return defaultFormat;
+        }
+
+        try {
+            return new SimpleDateFormat(formatString);
+        } catch (IllegalArgumentException e) {
+            /* invalid pattern */
+            return defaultFormat;
+        }
+    }
+    
+    /***
+     * Gets the respective URL by key argument 
+     *
+     * @param key
+     * @return Associated URL by Key value passed if it exists in the configuration, otherwise empty
+     */
+    private String getURLByKey(String key) {
+    	log.info("key:"+key);
+    	String prefix = "";
+    	if(key != null && key.trim().length() > 0) {
+    		prefix = key.trim(); 
+    		prefix = prefix+"=";
+    	} else {
+    		log.info("key passed is null (or) empty");
+    		return "";
+    	}
+    	if(urlOsgiArray != null && urlOsgiArray.length > 0) {
+    		for (String str : urlOsgiArray) {
+                String trimmedStr = str.trim(); 
+                if (trimmedStr.startsWith(prefix)) {        	
+                    return trimmedStr.substring((prefix).length());
+                }      
+            }
+    	}
+        return "";
+    }
+}
+
+ReplicationProcess.java:
+package com.tda.common.workflows;
+
+import java.util.Map;
+import javax.jcr.Node;
+import javax.jcr.Session;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.adobe.granite.workflow.WorkflowException;
+import com.adobe.granite.workflow.WorkflowSession;
+import com.adobe.granite.workflow.exec.WorkItem;
+import com.adobe.granite.workflow.exec.WorkflowProcess;
+import com.adobe.granite.workflow.metadata.MetaDataMap;
+import com.day.cq.dam.commons.util.AssetReferenceSearch;
+import com.day.cq.dam.commons.util.DamUtil;
+import com.day.cq.replication.Agent;
+import com.day.cq.replication.AgentFilter;
+import com.day.cq.replication.ReplicationActionType;
+import com.day.cq.replication.ReplicationOptions;
+import com.day.cq.replication.Replicator;
+import com.tda.common.utils.WorkflowUtils;
+import com.tda.common.utils.UserUtils;
+import com.day.cq.dam.api.Asset;
+
+@Component(name = "Replication Process -Component", service = WorkflowProcess.class,immediate = true, property = {
+                                "process.label=Replication Process" }, configurationPid = "com.tda.common.workflows.ReplicationProcess")
+
+public class ReplicationProcess implements WorkflowProcess {
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+@Reference
+private Replicator replicator;
+
+ResourceResolver resourceResolver;
+
+@Override
+public void execute(WorkItem workItem, WorkflowSession wfsession, MetaDataMap metaDataMap) throws WorkflowException {
+		try {	
+			    log.info("Start of ReplicationProcess Workflow");
+			    String args[]=WorkflowUtils.buildArguments(metaDataMap);
+			    String agentType = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.REPLICATION_TYPE.getArgumentName(), args);
+			    String approverGroup = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.APPROVER_GROUP_NAME.getArgumentName(), args);
+				resourceResolver = wfsession.adaptTo(ResourceResolver.class);	
+				if(approverGroup!=null) {
+					boolean isWorkflowRequesterApprover=UserUtils.isWorkflowRequesterApprover(resourceResolver, workItem.getWorkflow().getInitiator(),approverGroup);
+					workItem.getWorkflowData().getMetaDataMap().put("isApprover", String.valueOf(isWorkflowRequesterApprover));	
+				}else {
+					workItem.getWorkflowData().getMetaDataMap().put("isApprover", "false");
+				}
+				ReplicationOptions opts = new ReplicationOptions();			 
+				opts.setFilter(new AgentFilter() {
+					public boolean isIncluded(final Agent agent) {
+						boolean agentIsIncluded = (findAgentId(agentType,agent.getId()));
+						return agentIsIncluded;
+					}
+			});			
+			
+			opts.setSuppressVersions(true);			
+			Session session=resourceResolver.adaptTo(Session.class);
+			replicator.replicate(session, ReplicationActionType.ACTIVATE,workItem.getContentPath(),opts);			
+			//Asset Reference Code
+            String payload = workItem.getWorkflowData().getPayload().toString();
+            Resource asset = resourceResolver.getResource(payload);
+            if(!DamUtil.isAsset(asset)) {
+            Resource resource = resourceResolver.getResource(payload+"/jcr:content");
+            Node pageNode = resource.adaptTo(Node.class);
+            AssetReferenceSearch referenceSearch = new AssetReferenceSearch(pageNode,"/content/",resourceResolver);
+            Map<String,Asset> dependantAssetMap = referenceSearch.search();
+            opts.setSynchronous(true);         
+            for (Map.Entry<String, Asset> entry : dependantAssetMap.entrySet())
+                replicator.replicate (session, ReplicationActionType.ACTIVATE, entry.getKey(),opts);
+            }
+		}
+
+		catch (Exception e) {
+			log.error("exception:" + e);
+		} finally {
+			if(resourceResolver != null && resourceResolver.isLive()) {
+				resourceResolver.close();
+			}
+		}
+	}
+
+
+protected boolean findAgentId(String agentType,String AgentId) {
+	 for (String str : agentType.split(";")){
+	        String trimmedStr = str.trim();
+	        if(AgentId.startsWith(trimmedStr)) {
+	        	return true;
+	        }	       
+	 }
+	return false;
+}
+}
+
+DispatcherFlushProcess.java:
+package com.tda.common.workflows;
+
+import java.util.Map;
+
+import javax.jcr.Node;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.adobe.acs.commons.replication.dispatcher.DispatcherFlusher;
+import com.adobe.granite.workflow.WorkflowException;
+import com.adobe.granite.workflow.WorkflowSession;
+import com.adobe.granite.workflow.exec.WorkItem;
+import com.adobe.granite.workflow.exec.WorkflowProcess;
+import com.adobe.granite.workflow.metadata.MetaDataMap;
+import com.day.cq.dam.api.Asset;
+import com.day.cq.dam.commons.util.AssetReferenceSearch;
+import com.day.cq.dam.commons.util.DamUtil;
+import com.day.cq.replication.Agent;
+import com.day.cq.replication.AgentFilter;
+import com.day.cq.replication.ReplicationActionType;
+import com.day.cq.replication.ReplicationOptions;
+import com.day.cq.replication.ReplicationResult;
+import com.tda.common.utils.WorkflowUtils;
+
+@Component(name = "Dispatcher Flush Process-Component", service = WorkflowProcess.class,immediate = true, property = {
+                                "process.label=Dispatcher Flush Process" }, configurationPid = "com.tda.common.workflows.DispatcherFlushProcess")
+
+public class DispatcherFlushProcess implements WorkflowProcess {
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+@Reference
+private DispatcherFlusher dispatcherFlusher;
+
+ResourceResolver resourceResolver;
+
+@Override
+public void execute(WorkItem workItem, WorkflowSession wfsession, MetaDataMap metaDataMap) throws WorkflowException {
+		try {
+			log.info("Start of DispatcherFlushProcess Workflow");
+			String args[] = WorkflowUtils.buildArguments(metaDataMap);
+			resourceResolver = wfsession.adaptTo(ResourceResolver.class);					
+			log.info("isApprover from previous step:"+workItem.getWorkflowData().getMetaDataMap().get("isApprover"));
+			String flushAgentId = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.DISPATCHER_FLUSH_AGENT_ID.getArgumentName(), args);
+			String payload = workItem.getWorkflowData().getPayload().toString();
+			ReplicationOptions dispatcherFlushOption = new ReplicationOptions();
+			if (flushAgentId != null && !flushAgentId.isEmpty()) {
+				dispatcherFlushOption.setFilter(new AgentFilter() {
+					public boolean isIncluded(final Agent agent) {
+						boolean agentIsIncluded = (findAgentIdforDispatcherFlush(flushAgentId, agent.getId()));
+						return agentIsIncluded;
+					}
+				});
+				final Map<Agent, ReplicationResult> results =dispatcherFlusher.flush(resourceResolver, ReplicationActionType.ACTIVATE, true,dispatcherFlushOption.getFilter(), payload);
+					 for (final Map.Entry<Agent, ReplicationResult> entry : results.entrySet()) {
+		                    log.info("Agent Key:"+entry.getKey().getId()+"; Agent Value: "+entry.getValue().isSuccess());
+		                }
+			}
+			//Invalidate Payload Reference files
+            Resource asset = resourceResolver.getResource(payload);
+            if(!DamUtil.isAsset(asset)) {
+            Resource resource = resourceResolver.getResource(payload+"/jcr:content");
+            Node pageNode = resource.adaptTo(Node.class);
+            AssetReferenceSearch referenceSearch = new AssetReferenceSearch(pageNode,"/content/",resourceResolver);
+            Map<String,Asset> dependantAssetMap = referenceSearch.search();
+            for (Map.Entry<String, Asset> entry : dependantAssetMap.entrySet()) {
+            	dispatcherFlusher.flush(resourceResolver, ReplicationActionType.ACTIVATE, true,dispatcherFlushOption.getFilter(), entry.getKey());
+            	log.info("Payload Path: "+payload+"  Asset FileName:"+entry.getKey());            
+            }
+            }
+			
+		}	
+		
+		catch (Exception e) {
+			log.error("exception:" + e);
+		} finally {
+			if(resourceResolver != null && resourceResolver.isLive()) {
+				resourceResolver.close();
+			}
+		}
+		 log.info("End of DispatcherFlushProcess Workflow");
+	}
+
+
+protected boolean findAgentIdforDispatcherFlush(String flushAgentId,String AgentId) {
+	        String flushAgent =flushAgentId.trim();
+	        if(AgentId.trim().startsWith(flushAgent)) {
+	        	return true;	            
+	 }
+	return false;
+}
+}
+
+
+AkamaiFlushProcess.java:
+package com.tda.common.workflows;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+//import org.apache.felix.scr.annotations.Component;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.commons.json.JSONArray;
+import org.apache.sling.commons.json.JSONObject;
+import org.apache.sling.jcr.resource.api.JcrResourceConstants;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.adobe.granite.workflow.WorkflowException;
+import com.adobe.granite.workflow.WorkflowSession;
+import com.adobe.granite.workflow.exec.WorkItem;
+import com.adobe.granite.workflow.exec.WorkflowProcess;
+import com.adobe.granite.workflow.metadata.MetaDataMap;
+import com.akamai.edgegrid.signer.ClientCredential;
+import com.akamai.edgegrid.signer.apachehttpclient.ApacheHttpClientEdgeGridInterceptor;
+import com.akamai.edgegrid.signer.apachehttpclient.ApacheHttpClientEdgeGridRoutePlanner;
+import com.tda.common.utils.WorkflowUtils;
+
+@Component(name = "Akamai Flush Process-Component", service = WorkflowProcess.class,immediate = true, property = {
+                                "process.label=Akamai Flush Process"},configurationPid = "com.tda.common.workflows.AkamaiFlushProcess")
+
+public class AkamaiFlushProcess implements WorkflowProcess {
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	/**
+	 * Service used to get Sling Osgi configurations
+	 */
+	@Reference
+	private ConfigurationAdmin configAdmin;
+	
+	@Reference
+    private ResourceResolverFactory resourceResolverFactory;
+	
+	private String hostName;
+	
+	private String akamaiUrl;
+	
+	private static final String matchAndSubst = "/content/(.[^/]*)/en_US/index(.html$|/)(.*)?::/$1/$3";
+	
+	@Override
+	public void execute(WorkItem workItem, WorkflowSession wfsession, MetaDataMap metaData) throws WorkflowException {
+		int result = 1;  /*Default to failed (0-success, 1-failed)*/
+		List<String> files = new ArrayList<String>();
+		try {
+			 log.info("Start of Akamia Flush Process Workflow");
+			
+			 String qaTestFlag = null;
+		     String qaAkamaiTestUrl = null;
+		     String akamaiStageUrl = null;
+		     String akamaiProductionUrl = null;
+		     String stageHostName =  null;
+		     String productionHostName = null;
+		     String[] regExps = null;
+			
+			 String[] args = WorkflowUtils.buildArguments(metaData);
+			 /* process arguments */
+		     String akamaiEnv = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.AKAMAIENV.getArgumentName(), args);
+		     log.info("Akmai Environment:::::::"+akamaiEnv);
+		     /* Get the site which the current workflow belongs to.*/
+		     String projectKey = WorkflowUtils.getValueFromArgs(WorkflowUtils.Arguments.PROJECT.getArgumentName(), args);
+		     log.info("Workflow Site:::::::"+projectKey);
+		     
+		     if(akamaiEnv == null) {
+		    	 akamaiEnv = "stage";
+		     }
+		    
+		    
+		     /* Get Stage and Live akamai configuration using Sling OSGI Configurations */
+	         try {
+	        	Configuration configOsgi = configAdmin.getConfiguration("com.tda.common.workflows.AkamaiFlushProcess");
+	        	if(configOsgi != null && configOsgi.getProperties() != null) {
+	        		akamaiStageUrl = (String)configOsgi.getProperties().get("stageAkamaiURL");
+	        		akamaiProductionUrl = (String)configOsgi.getProperties().get("productionAkamaiURL");
+	        		/* Get site specific configurations if exists, otherwise default configurations.*/
+	        		if(projectKey != null && projectKey.length() > 0) {
+		        		stageHostName = (String)configOsgi.getProperties().get(projectKey+"-stageHostName");
+		        		productionHostName = (String)configOsgi.getProperties().get(projectKey+"-productionHostName");   
+	        		} else {
+	        			stageHostName = (String)configOsgi.getProperties().get("stageHostName");
+		        		productionHostName = (String)configOsgi.getProperties().get("productionHostName"); 
+	        		}
+	        		qaTestFlag = (String)configOsgi.getProperties().get("qaTestFlag");
+	        		qaAkamaiTestUrl = (String)configOsgi.getProperties().get("qaTestAkamaiUrl");
+	        		regExps = (String[])configOsgi.getProperties().get("regularExpression");
+	        	}	
+	         } catch(IOException ex) {
+	        	log.error("Exception while getting sling osgi configuration:::"+ex);
+	         }
+	         
+	        /* get current page path with html extension*/
+	        String pagePath = workItem.getWorkflowData().getPayload().toString() + ".html";
+	        log.info("pagePath::::"+pagePath);
+	        
+	        /* Add the file to be purged based on akamai environment (stage or production) */
+	        if("production".equals(akamaiEnv)) {
+	        	hostName = productionHostName;
+	        	akamaiUrl = akamaiProductionUrl;
+	        } else {
+	        	hostName = stageHostName;
+	        	akamaiUrl = akamaiStageUrl;
+	        }
+	       
+	        log.info("akamaiUrl::::::::"+akamaiUrl);
+	        log.info("hostName:::::::::"+hostName);
+	        log.info("qaTestFlag:::::"+qaTestFlag);
+	        
+	        if(hostName == null) {
+	        	hostName = "";
+	        }
+	        
+	        if(akamaiUrl == null) {
+	        	akamaiUrl = "";
+	        }
+	      
+	        /* Get ResourceResolver */
+	        final Map<String, Object> authInfo = new HashMap<>();
+	        authInfo.put(JcrResourceConstants.AUTHENTICATION_INFO_SESSION,
+	        		wfsession);
+	        ResourceResolver resourceResolver = null;
+	        resourceResolver = resourceResolverFactory.getResourceResolver(authInfo);
+    		     
+	        
+	        String matchRegExp = WorkflowUtils.getValueByKey(projectKey+"-matchAndSubstitution", regExps);
+	        matchRegExp =  (matchRegExp != null && matchRegExp.contains("::")) ? matchRegExp : WorkflowUtils.getValueByKey("matchAndSubstitution", regExps);
+	        matchRegExp =  (matchRegExp != null && matchRegExp.contains("::")) ? matchRegExp : matchAndSubst;
+	        
+	        log.info("Match Regular Expression::"+matchRegExp);
+	        String[] splitArray = matchRegExp.split("::");
+	        /* As akamai is not configured for lower level environment (dev & qa), 
+	         * Introduced a flag for QA people to test the desired akamai and a site url.
+	         * If qa test flag is on configured test file will be added to the purge list. Other wise, the current page will be added to purge list.
+	         * Defaulted to current page path.
+	         */
+	        if("true".equals(qaTestFlag)) {
+	        	files.add(qaAkamaiTestUrl);
+	        } else {
+
+	        	/* Get mapped url based on out bound rules defined in the system*/
+	        	String pagePathMappedUrl = WorkflowUtils.getAkamizedUrl(projectKey, pagePath, splitArray[0], splitArray[1]); 
+	        	log.info("Akamized Url::::::::::::::::::::"+pagePathMappedUrl);
+     	
+	        	if(pagePathMappedUrl != null && pagePathMappedUrl.trim().length() > 0) {
+	        		pagePathMappedUrl = hostName + pagePathMappedUrl;
+	        	}
+	        	
+	        	if(pagePathMappedUrl == null) {
+	        		pagePathMappedUrl = "";
+	        	} 
+	            files.add(pagePathMappedUrl);        	
+	        }
+		
+			/* Invoke akamai purge*/
+			boolean purgeSuccessful = purgeFiles(files);
+			log.info("Is Purge Successful :::::" + purgeSuccessful); 
+			
+			/* assign result to 0 if success, otherwise 1 */
+			result = purgeSuccessful ? 0 : 1;										
+			log.info("final result is::::::"+ result);	
+			
+			log.info("End of Akamia Flush Process Workflow");
+		}catch (Exception e) {
+			 /*assign result to 1 if exception */
+			result = 1;
+			log.error("exception:" + e);
+		}
+	}
+	
+	
+	/**
+     * The method returns the mapped url based on rules
+     * 
+     * @param pagePath
+     * @return mapped path.
+     */
+	private String mappedUrl(String pagePath) {
+		
+		return pagePath.replace("/content/workplace/en_US/index", "/workplace");
+	}
+
+	/**
+     * The method purge the akamai cache for the list of files passed.
+     * 
+     * @param files
+     * @return true if purge is successful, otherwise false.
+     */
+	private boolean purgeFiles(List<String> files) throws Exception{
+		/* Build credentials for HTTP Client */
+		ClientCredential credential = ClientCredential.builder()
+	 	        .accessToken("akab-i7jgpatth3ttxdcx-mtjx4wasikxnhh2l")
+	 	        .clientToken("akab-ssofoz7jsx6kllwl-g3gxfany7pi3bdiz")
+	 	        .clientSecret("jLuChJcGdzyB9RHLBEjzgS4AI/CvTw3VBUkt2GsHqO0=")
+	 	        .host("akab-rhsafdiweg5kjvvy-upq5dnlep3wvrz5t.purge.akamaiapis.net")
+	 	        .build();
+		
+		/* Build HTTP Client */
+		HttpClient client=HttpClientBuilder.create()
+				.addInterceptorFirst(new ApacheHttpClientEdgeGridInterceptor(credential))
+				.setRoutePlanner(new ApacheHttpClientEdgeGridRoutePlanner(credential))
+				.setSSLContext(trustAllCertificates())
+				.setSSLHostnameVerifier(trustAllHosts())
+				.build();
+
+		
+		 /*Add each file name into JSON array*/
+	    JSONArray list = new JSONArray(); 
+	    for (String file : files) {
+			list.put(file);
+		}
+	    
+		/* Create JSON object and add JSON array of filenames to object */
+		JSONObject obj = new JSONObject();
+	    obj.put("objects", list);
+		String JsonData=obj.toString();
+		
+		/* log json data */
+		log.info("json data is : "+JsonData);
+		log.info("akamai url to post:::::"+akamaiUrl);
+		
+		/* Create HTTP Post and execute */
+		 
+	   // HttpPost request = new HttpPost("https://"+"akab-rhsafdiweg5kjvvy-upq5dnlep3wvrz5t.purge.akamaiapis.net"+"/ccu/v3/invalidate/url/staging");
+	    HttpPost request = new HttpPost(akamaiUrl);
+	    request.setHeader("Content-Type", "application/json");
+	    request.setHeader("Accept", "application/json");
+	    request.setEntity(new StringEntity(JsonData));
+	    HttpResponse resp=client.execute(request);
+	    
+		 /*Log Post parameters message*/
+	    log.info("Post Parameters: "+JsonData);
+	    log.info("Response code: "+resp.getStatusLine().getStatusCode());
+	    
+		/* Print results */
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+	    String line="";
+	    StringBuffer result = new StringBuffer();
+		while ((line = reader.readLine()) != null) {
+			result.append(line);
+		}
+		log.info("Results from akamai:"+result.toString());
+	    
+		/* Return true or false (for success) */
+	    return resp.getStatusLine().getStatusCode() == 201;
+	}
+	
+	/**
+     * The method trusts all the hosts by implementing Hostname Verifier anonymously whose verify method true always irrespective of session.
+     * 
+     * @return 
+     */
+	private HostnameVerifier trustAllHosts() {
+	    return new HostnameVerifier() {
+	        public boolean verify(String s, SSLSession sslSession) {
+	            return true;
+	        }
+	    };
+	}
+	
+	/**
+     * Set up a TrustManager that trusts everything
+     * 
+     * @return SSLContext
+     */
+	private SSLContext trustAllCertificates() {
+		try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(X509Certificate[] certs,
+                                               String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs,
+                                               String authType) {
+                }
+            }}, new SecureRandom());
+            return sslContext;
+        } catch (KeyManagementException e1) {
+            throw new RuntimeException(e1);
+        } catch(NoSuchAlgorithmException e2){
+        	throw new RuntimeException(e2);
+        }
+	}
+}
