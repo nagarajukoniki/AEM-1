@@ -1,0 +1,226 @@
+dialog content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Container"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/tabs">
+        <items jcr:primaryType="nt:unstructured">
+            <general
+                jcr:primaryType="nt:unstructured"
+                jcr:title="General"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                    margin="{Boolean}false"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <column
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <numberofcolumns
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+                                allowNegative="{Boolean}false"
+                                fieldDescription="Select number of columns"
+                                fieldLabel="Number of columns"
+                                min="0"
+                                name="./selectedcolumns"
+                                step="1"
+                                value="0"/>
+                        </items>
+                    </column>
+                </items>
+            </general>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="Container component"
+    jcr:primaryType="cq:Component"
+    jcr:title="Container component"
+    componentGroup="common"/>
+    editconfig:
+    ?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+    <cq:listeners
+        jcr:primaryType="cq:EditListenersConfig"
+        afterdelete="REFRESH_PARENT"
+        afteredit="REFRESH_PAGE"
+        afterinsert="REFRESH_PAGE"/>
+</jcr:root>
+cardcontainer.html:
+<sly data-sly-use.quicklink="com.tda.common.models.CardContainerModel" />
+<div data-sly-unwrap>
+    <center>${quicklink.getEditMessage @ context='html'} ${quicklink.getEditErrors @ context='html'} </center>
+</div>
+
+<div class="columncontainer">
+    <div class="module-container contentWrapper">
+        <header class="pageSection_header">
+            <h2 class="pageSection_title">${properties.title}</h2>
+            <p>${properties.description @ context='html'}</p>
+        </header>
+        <div data-sly-list.item="${quicklink.getItemList}" data-sly-unwrap>
+            <div class="column-${properties.selectedcolumns}">
+                <div data-sly-resource="${itemList.index @ resourceType='wcm/foundation/components/parsys'}" data-sly-unwrap="${!wcmmode.edit && !wcmmode.design}"></div>
+            </div>
+        </div>
+        ${quicklink.getContactUs @ context='html'}
+    </div>
+</div>
+cardmodel.java:
+package com.tda.common.models;
+
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+
+import java.util.ArrayList;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import com.day.cq.wcm.api.WCMMode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Model(adaptables =  { SlingHttpServletRequest.class, Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class CardContainerModel {
+    @Inject 
+    SlingHttpServletRequest request;
+
+    @ValueMapValue(name="primarybutton", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String primarybutton = "";
+    
+    @ValueMapValue(name="primarybuttonlink", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String primarybuttonlink = "";	
+
+    @ValueMapValue(name="urlnewwindow", injectionStrategy = InjectionStrategy.DEFAULT)
+    private  String isPageNewWin="";
+
+    @ValueMapValue(name="pbenableUnderline", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String enableUnderline = "";
+
+    @ValueMapValue(name="buttoncolor", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String buttonColor = "";
+
+    @ValueMapValue(name="buttontextcolor", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String buttonTextColor = "";
+    
+    @ValueMapValue(name="btnclass", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String btnClass = "";
+    
+    public String getBtnClass() {
+		return btnClass;
+	}
+
+	private WCMMode mode;
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(CardContainerModel.class);
+    
+    // Variable name must match case. if not, the name parameter can be used
+    @ValueMapValue(name="selectedcolumns",  injectionStrategy = InjectionStrategy.DEFAULT)
+    private int selectedColumns = 0;
+
+    @ValueMapValue(name="myselectedtheme", injectionStrategy = InjectionStrategy.DEFAULT)
+    private String selectedTheme = "";
+
+    @PostConstruct
+    protected void init() {
+    	mode = WCMMode.fromRequest(request);
+    	LOGGER.info("Mode :::" + mode);
+		LOGGER.info("Class :::" + getContainerWrapperClass());
+    }
+
+    public String getEditMessage() {
+    	String editMessage = "";
+    	
+    	if (TDACommonUtil.isEditMode(mode)) editMessage = TDACommonUtil.wrapEditMessage("Configure The Container");
+
+    	return editMessage;
+    }
+    
+    public String getEditErrors() {
+    	String editErrors = "";
+    	
+    	if (TDACommonUtil.isEditMode(mode)) {
+    		if (selectedColumns <= 0) {
+    			editErrors = TDACommonUtil.wrapEditErrors("Please select the number of columns required");
+    		}
+    	}
+    	
+    	return editErrors;
+    }
+  
+    public ArrayList<Integer> getItemList() {
+    	return TDACommonUtil.getItemList(selectedColumns);
+    }
+        
+    public String getContainerWrapperClass() {
+    	return TDACommonUtil.isEditMode(mode)? "three-col" : "three-col-flex";
+    } 
+    
+    public String getPageUrl() {
+    	return TDACommonUtil.getValidPath(primarybuttonlink);
+    }
+
+    public String getPrimarybuttonText() {
+    	return primarybutton;
+    }
+    public String getPagePathTarget() {
+    	return "".equals(isPageNewWin) ? "":"_blank";
+    }
+
+    public String getButtoncolor() {
+    		return buttonColor;
+    	}
+
+    public String getButtonTextColor() {
+    		return buttonTextColor;
+    	}
+    
+    public String showUnderlineForButton() {
+    	return "".equals(enableUnderline) ? "":"underline";		
+    }
+
+    public String getButtonTextBorderColor() {
+    	return (buttonTextColor == "none" || buttonTextColor == null) ? "" : "borderNone";
+	}
+    
+    public String getPrimaryButtonClass() {
+    	if ("".equals(getPrimarybuttonText().trim()) || getPrimarybuttonText() == null) {
+    		return "";
+    		}
+    	else {
+    		String primarybuttonclass="";
+    		primarybuttonclass= "<div class=\"list-reasons-links\"> <a href=\""+getPageUrl()+"\" target=\""+getPagePathTarget()+"\" class=\"split-primary-banner-cta btn-green-solid\" style=\"text-decoration:"+showUnderlineForButton()+" ;color:"+getButtoncolor()+";background-color:"+getButtonTextColor()+" ;\" title=\""+getPrimarybuttonText()+"\">"+getPrimarybuttonText()+"</a>\r\n" + 
+        			"</div>" ;
+    		return primarybuttonclass;
+    		
+    	}
+	}
+    
+    public String getListClass() {
+    	return (selectedTheme.equals("hp-td-reasons-container")?"list-reasons":"");
+    	
+    }
+}
