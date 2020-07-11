@@ -1,0 +1,269 @@
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Header"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[cq.common.wcm,cq.siteadmin.admin.properties]"
+    mode="edit">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+                    <itemlist
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="List Items"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        margin="{Boolean}false">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <scripts
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        fieldDescription="Click Add Field to add more"
+                                        fieldLabel="Add List">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"
+                                            acs-commons-nested=""
+                                            name="./itemlists">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <key
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldDescription="Key is "
+                                                            fieldLabel="Key"
+                                                            name="./key"/>
+                                                        <value
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                            fieldDescription="Value is displayed in dropdown menu"
+                                                            fieldLabel="Value"
+                                                            name="./value"/>
+                                                        <urlnewwindow
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                                            name="./urlnewwindow"
+                                                            text="Open in new window?"
+                                                            value="true"/>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </scripts>
+                                    <headerlogo
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="cq/gui/components/authoring/dialog/fileupload"
+                                        allowUpload="{Boolean}false"
+                                        autoStart="{Boolean}false"
+                                        class="cq-droptarget"
+                                        fieldLabel="Header Logo Image"
+                                        fileNameParameter="./headerFileName"
+                                        fileReferenceParameter="./headerLogoFileReference"
+                                        mimeTypes="[image]"
+                                        multiple="{Boolean}false"
+                                        name="./file"
+                                        title="Upload Header Image Logo"
+                                        uploadUrl="${suffix.path}"
+                                        useHTML5="{Boolean}true"/>
+                                    <logoalt
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldLabel="Header Logo Alt text"
+                                        name="./mainlogoalt"/>
+                                    <logourl
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldLabel="Logo URL"
+                                        name="./logourl"
+                                        rootPath="/content"/>
+                                    <path
+                                        jcr:primaryType="nt:unstructured"
+                                        jcr:title="Home Page Path"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldLabel="Home Page Path"
+                                        name="./homepagepath"
+                                        rootPath="/content"/>
+                                </items>
+                            </column>
+                        </items>
+                    </itemlist>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:icon="text"
+    jcr:description="Global Multiselect Container"
+    jcr:primaryType="cq:Component"
+    jcr:title="Global Multiselect Container"
+    componentGroup=".hidden"/>
+    .html:
+    <div data-sly-use.topnav="com.tda.common.models.TopNav">
+    <div id="preheader">
+        <div class="container grid">
+            <div class="grid-u-1-1">
+                <sly data-sly-include ="preglobal.html"></sly>
+            </div>
+        </div>
+    </div>
+    <div id="nav-desktop">
+        <div class="container grid">
+            <div class="grid-u-1-1">
+                <div class="logo">
+                    <sly data-sly-include ="readlogo.html"></sly>
+                </div>
+                <nav class="desktop-nav-container" style="left: -100%;">
+                    <ul class="desktop-menu">
+                        <li data-sly-repeat="${topnav.getItems}">
+								<a href="${item.path}.html">${item.title}</a>
+						</li>
+                         <li class="login">
+                            <a href="#">Login in to Equity360&trade; &#9662;</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div id="nav-mobile">
+        <div class="mobile-nav-bar">
+            <div class="logo">
+                <sly data-sly-include ="readlogo.html"></sly>
+            </div>
+            <div class="login"><a href="#">Login in to Equity360&trade; &#9662;</a></div>
+            <div class="menu-toggle">
+                <div class="nav-mobile-text">Menu</div>
+                <div class="hemburger-div">
+                    <span></span>
+                </div>
+            </div>
+
+        </div>
+        <nav class="mobile-nav-container" style="left: -100%;">
+            <div  data-sly-repeat="${topnav.getItems}">
+            	<div class="mobile-main-nav-item"><a href="${item.path}.html">${item.title}</a></div>
+            </div>
+            <sly data-sly-include ="preglobal_mobile.html"></sly>
+        </nav> <!-- navigation end -->
+    </div>
+</div>
+link.js:
+use( function(){
+
+    var linkHref = this.link;
+
+    if(linkHref && linkHref.indexOf("/content") >= 0 && !linkHref.indexOf("/content/dam") >= 0){
+
+        linkHref = linkHref + ".html";
+    }
+
+    return {
+        linkHref : linkHref
+    }
+
+});
+preglobal.html:
+<sly data-sly-test="${currentStyle}" data-sly-use.xtcontainerstyleResource="${currentStyle.path}">
+	<sly data-sly-test="${xtcontainerstyleResource}">
+	  <sly data-sly-test="${xtcontainerstyleResource.hasChildren}" data-sly-list="${xtcontainerstyleResource.listChildren}">
+		<sly data-sly-list="${item.listChildren}">
+			<sly data-sly-test="${item.urlnewwindow == 'true'}">
+				<a href="${item.value}" target="_blank">${item.key}</a>
+			</sly>
+			<sly data-sly-test="${item.urlnewwindow != 'true'}">
+				<a href="${item.value}" target="_parent">${item.key}</a>
+			</sly>
+		</sly>
+	  </sly>
+	</sly>
+</sly>
+preglobalmobile.html:
+<sly data-sly-test="${currentStyle}" data-sly-use.xtcontainerstyleResource="${currentStyle.path}">
+	<sly data-sly-test="${xtcontainerstyleResource}">
+	  <sly data-sly-test="${xtcontainerstyleResource.hasChildren}" data-sly-list="${xtcontainerstyleResource.listChildren}">
+		<sly data-sly-list="${item.listChildren}">
+			<sly data-sly-test="${item.urlnewwindow == 'true'}">
+				<div class="mobile-nav-group">
+					<div class="mobile-main-nav-item">
+						<a href="${item.value}" target="_blank">${item.key}</a>
+					</div>
+				</div>	
+			</sly>
+			<sly data-sly-test="${item.urlnewwindow != 'true'}">
+				<div class="mobile-nav-group">
+					<div class="mobile-main-nav-item">
+						<a href="${item.value}" target="_blank">${item.key}</a>
+					</div>
+				</div>	
+			</sly>
+		</sly>
+	  </sly>
+	</sly>
+</sly>
+readlogo.html:
+<sly data-sly-test.isLogoExisted="${currentStyle.headerLogoFileReference}" >
+	<a data-sly-use.link="${'link.js' @ link = currentStyle.logourl}" href="${link.linkHref}" title="logo">
+		<img src="${currentStyle.headerLogoFileReference} " alt="${currentStyle.mainlogoalt}" title="${currentStyle.title}">
+	</a>
+</sly>
+<sly data-sly-test="${!isLogoExisted}">
+	<span>${currentStyle.mainlogoalt}</span>
+</sly>	
+TopNav.model:
+package com.tda.common.models;
+
+import java.util.*;
+import java.util.Iterator;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageFilter;
+
+import com.adobe.cq.sightly.WCMUsePojo;
+
+
+public class TopNav extends WCMUsePojo {
+
+
+	 private List<Page> items = new ArrayList<Page>();
+	    private Page rootPage;
+
+	    // Initializes the navigation
+	    @Override
+	    public void activate() throws Exception {
+	        rootPage = getCurrentPage().getAbsoluteParent(3);
+
+	        if (rootPage == null) {
+	        	rootPage = getCurrentPage();
+	        }
+	        
+	        Iterator<Page> childPages = rootPage.listChildren(new PageFilter(getRequest()));
+		   	while (childPages.hasNext()) {
+				items.add(childPages.next());
+		   	}
+	    }
+
+	    // Returns the navigation items
+	    public List<Page> getItems() {
+	        return items;
+	    }
+	    // Returns the navigation root
+	    public Page getRoot() {
+	        return rootPage;
+	    }
+}
