@@ -1,0 +1,484 @@
+media-cards.html:
+ <div data-sly-use.mediaCards="com.tda.common.models.MediaCardsModel"></div>
+ <div data-sly-test="${wcmmode.edit}">
+     <center>Configure Media Cards Component</center> 
+</div>
+<sly data-sly-test.eventcard="${mediaCards.isEventCard}">
+	<section class="module-container">
+		<div class="events-cards__section cardcontainer">
+			<div class="sectionheadline">
+				  <h2 class="aligned-${mediaCards.getSectionHeadlineAlignment @context='text'} text-black">${mediaCards.getSectionHeadlineText}</h2>
+			</div>
+			<div class="events-cards" data-sly-list.medialist="${mediaCards.getArticleList}">
+			   <a href="${medialist.getResourcePath @context='uri'}.html" class="events-cards__link">
+					<div class="events-cards__card">
+						<div class="events-cards__img-wrapper">
+							<img src="${medialist.getArticleModel.getHeroSmUrl@context='uri'}" class="events-cards__img" alt="Article">
+						</div>
+						<div class="events-cards__title-wrapper">
+							<h3 class="events-cards__title">${medialist.getArticleModel.head}</h3>
+						</div>
+					</div>
+				</a>    
+			</div>
+			<div class="events-cards__more">
+				<a href="${mediaCards.getReadMoreLink @context='uri'}.html" class="events-cards__more-link">${mediaCards.getReadMoreLabel}</a>
+			</div> 
+		</div>
+	</section>
+</sly>
+<sly data-sly-test="${!eventcard}">
+<section class="module-container bg-light-grey ${mediaCards.getMargin} inner-padding">
+		<div class="component__body-container">
+				<div class="sectionheadline">
+				   <h2 class="aligned-${mediaCards.getSectionHeadlineAlignment @context='text'} text-black">${mediaCards.getSectionHeadlineText @context='text'}</h2>
+		</div>
+		<div class="thumbnail-grid__section">
+			<div class="thumbnail-grid" data-sly-list.medialist="${mediaCards.getArticleList}">
+				<a href="${medialist.getResourcePath @context='uri'}.html" class="thumbnail-grid__link">
+					<div class="thumbnail-grid__card">
+						<div class="thumbnail-grid__img-wrapper">
+							<img src="${medialist.getArticleModel.getHeroSmUrl@context='uri'}" class="thumbnail-grid__img" alt="Article">
+						</div>
+							<div class="thumbnail-grid__text">
+								<h3 class="thumbnail-grid__tag">${medialist.getArticleModel.category}</h3>
+								<p class="thumbnail-grid__headline">${medialist.getArticleModel.head}</p>
+							</div>
+					</div>
+				</a>                              
+			</div>
+		</div>
+		</div>
+	</section>
+</sly>
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Page"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[cq.common.wcm,cq.siteadmin.admin.properties,tda.mediacontainer]"
+    mode="edit">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/foundation/container"
+        class="cq-dialog-content-page">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/foundation/layouts/tabs"
+                    type="nav"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <mediacontainer
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/foundation/section">
+                        <layout
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/foundation/layouts/fixedcolumns"
+                            margin="{Boolean}false"/>
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <eventcardtheme
+                                        granite:class="cq-dialog-dropdown-showhide"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Event Cards Theme "
+                                        name="./eventcardtheme">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <_x0033_-feature-cards
+                                                jcr:primaryType="nt:unstructured"
+                                                text="3 Feature Cards"
+                                                value="3-feature-cards"/>
+                                            <n-feature-cards
+                                                jcr:primaryType="nt:unstructured"
+                                                text="N Thumbnail Cards"
+                                                value="n-thumbnail-cards"/>
+                                        </items>
+                                        <granite:data
+                                            jcr:primaryType="nt:unstructured"
+                                            cq-dialog-dropdown-showhide-target=".showhidetargets"/>
+                                    </eventcardtheme>
+                                    <headline
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldDescription="Section Headline Text."
+                                        fieldLabel="Section Headline Text."
+                                        name="./sectionheadlinetext"/>
+                                    <sectionheadlinealignment
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/buttongroup"
+                                        fieldLabel="Section Headline Alignment"
+                                        name="./sectionheadlinealignment"
+                                        selectionMode="single">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <left
+                                                jcr:primaryType="nt:unstructured"
+                                                icon="Left"
+                                                name="./left"
+                                                text="Left"
+                                                value="left"/>
+                                            <center
+                                                jcr:primaryType="nt:unstructured"
+                                                icon="Center"
+                                                name="./center"
+                                                text="Center"
+                                                value="center"/>
+                                        </items>
+                                    </sectionheadlinealignment>
+                                    <mediacontainer
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        composite="{Boolean}true"
+                                        eaem-show-on-collapse="EAEM.showProductName"
+                                        fieldLabel="Media Cards">
+                                        <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                                            name="./mediacards">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <column
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <linkURL
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                            name="./linkURLs"
+                                                            rootPath="/content"/>
+                                                    </items>
+                                                </column>
+                                            </items>
+                                        </field>
+                                    </mediacontainer>
+                                    <targetreadmore
+                                        granite:class="showhidetargets"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <readmorelabel
+                                                granite:id="readmore"
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                fieldDescription="Read more Label"
+                                                fieldLabel="Read More Label"
+                                                name="./readMoreLabel"/>
+                                        </items>
+                                        <granite:data
+                                            jcr:primaryType="nt:unstructured"
+                                            showhidetargetvalue="3-feature-cards"/>
+                                    </targetreadmore>
+                                    <targetreadmoreurl
+                                        granite:class="showhidetargets"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <readmoreurl
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                                                fieldLabel="Read More Link:"
+                                                name="./readMoreLink"
+                                                rootPath="/content"/>
+                                        </items>
+                                        <granite:data
+                                            jcr:primaryType="nt:unstructured"
+                                            showhidetargetvalue="3-feature-cards"/>
+                                    </targetreadmoreurl>
+                                    <targetmargin
+                                        granite:class="showhidetargets"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <margin
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                fieldLabel="Margin"
+                                                name="./margin">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <no-margin
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="No Margin"
+                                                        value="no-margin"/>
+                                                    <no-desktop-margin
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="No Desktop Margin"
+                                                        value="no-desktop-margin"/>
+                                                </items>
+                                            </margin>
+                                        </items>
+                                        <granite:data
+                                            jcr:primaryType="nt:unstructured"
+                                            showhidetargetvalue="n-thumbnail-cards"/>
+                                    </targetmargin>
+                                </items>
+                            </column>
+                        </items>
+                    </mediacontainer>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="media container component for displaying event cards"
+    jcr:primaryType="cq:Component"
+    jcr:title="Media Cards"
+    componentGroup="common"/>
+    editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+    <cq:listeners
+        jcr:primaryType="cq:EditListenersConfig"
+        afterdelete="REFRESH_PARENT"
+        afteredit="REFRESH_PAGE"
+        afterinsert="REFRESH_PAGE"/>
+</jcr:root>
+dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Dialog"
+    xtype="dialog">
+    <items
+        jcr:primaryType="cq:Widget"
+        xtype="tabpanel">
+        <items jcr:primaryType="cq:WidgetCollection">
+            <tab1
+                jcr:primaryType="cq:Panel"
+                title="Tab 1"/>
+        </items>
+    </items>
+</jcr:root>
+MediaCardsModel.java:
+package com.tda.common.models;
+
+import java.util.*;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tda.common.models.ArticleModel;
+import com.tda.common.models.MediaCardsBean;
+
+@Model(adaptables = Resource.class)
+public class MediaCardsModel {
+  private static final Logger log = LoggerFactory.getLogger(MediaCardsModel.class);
+	@Inject
+	@Optional
+	public Resource mediacards;
+	
+	@Inject
+	@Optional
+	public String eventcardtheme;
+	
+	@Inject
+	@Optional
+	private String sectionheadlinetext;
+	
+	@Inject
+	@Optional
+	private String sectionheadlinealignment;
+	
+	@Inject
+	@Optional
+	private String readMoreLabel;
+	
+	@Inject
+	@Optional
+	private String readMoreLink;	
+	
+	@Inject
+	@Optional
+	private String margin;
+
+	@Inject
+	private ResourceResolverFactory resolverFactory;
+	 
+	private ArticleModel articleModel;
+	private boolean isEventCard=false;
+	private  ArrayList<MediaCardsBean> articleList = new ArrayList<MediaCardsBean>();
+	private String resourceType=null;
+	
+	@PostConstruct
+	protected void init() {
+		try {
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put(ResourceResolverFactory.SUBSERVICE, "tdaRead");
+			ResourceResolver resourceResolver = null;
+			 resourceResolver = resolverFactory.getServiceResourceResolver(param);
+			Resource mediaCardList = resourceResolver.getResource(mediacards.getPath());
+			log.debug("mediacards path:"+mediacards.getPath());
+			getMediaCardsList(mediaCardList,resourceResolver);
+
+		} catch (Exception e) {
+			log.error("Exception in MediaCardsModel:" + e);
+		}
+	}
+	
+
+	public String getEventcardTheme() {
+		return eventcardtheme;
+	}
+
+	public String getMargin() {
+		return margin;
+	}
+
+	public String getSectionHeadlineText() {
+		return sectionheadlinetext;
+	}
+
+
+	public String getSectionHeadlineAlignment() {
+		return sectionheadlinealignment;
+	}
+
+	
+	public String getResourceType(Node mediaResourceNode) throws ValueFormatException, PathNotFoundException, RepositoryException {
+		return mediaResourceNode.hasProperty("sling:resourceType")?mediaResourceNode.getProperty("sling:resourceType").getString():null;
+	}
+	
+  public ResourceResolver getResourceResolver() {
+	  try {
+	  Map<String, Object> param = new HashMap<String, Object>();
+	  param.put(ResourceResolverFactory.SUBSERVICE, "tdaRead");
+		return resolverFactory.getServiceResourceResolver(param);
+	  }catch(LoginException e) {
+		  log.debug("login exception during crating resourceResolver Object"+e);
+		  return null;
+	  }
+  }
+
+  
+public void getMediaCardsList(Resource mediaCardList,ResourceResolver resourceResolver) {
+		try {
+			Node itemNode = null;
+			String articlePage = null;
+			Resource mediaResource = null;
+			Node mediaDetailNode = null;
+			int eventCardCount=0;
+			String mediaDetailPage=null;
+			if(eventcardtheme.equals("3-feature-cards")) {
+				isEventCard=true;
+			}
+			log.info("event card theme:"+eventcardtheme+" isEventCard:"+isEventCard);
+			if (mediaCardList != null && !ResourceUtil.isNonExistingResource(mediaCardList)) {
+				Iterator<Resource> iterator = mediaCardList.listChildren();
+				while (iterator.hasNext()) {
+					Resource childResouce = iterator.next();
+					itemNode = childResouce.adaptTo(Node.class);
+					if (itemNode.hasProperty("linkURLs")) {
+						articlePage = itemNode.getProperty("linkURLs").getString();
+						log.debug("articlePage:"+articlePage);
+						mediaDetailNode=resourceResolver.getResource(articlePage + "/jcr:content/parsys/media_detail").adaptTo(Node.class);
+						if(mediaDetailNode!=null) {
+						mediaDetailPage=mediaDetailNode.hasProperty("pagepath")?mediaDetailNode.getProperty("pagepath").getString():null;
+						mediaResource = resourceResolver.getResource(mediaDetailPage + "/jcr:content/parsys");
+						log.debug("mediaResource:"+mediaResource);
+						if (mediaResource != null && !ResourceUtil.isNonExistingResource(mediaResource)) {
+							mediaDetailNode = mediaResource.adaptTo(Node.class);
+							resourceType = getResourceType(mediaDetailNode);
+							if (resourceType != null
+									&& resourceType.equals("ecms-aem/components/content/article-component")) {
+								if (mediaResource != null && !ResourceUtil.isNonExistingResource(mediaResource)) {
+									log.debug("Before ArticleModel adapting");
+									articleModel = mediaResource.adaptTo(ArticleModel.class);
+									MediaCardsBean eventCardBean = new MediaCardsBean();
+									eventCardBean.setArticleModel(articleModel);
+									eventCardBean.setResourcePath(articlePage);
+									log.debug("resource path:"+articlePage);
+									articleList.add(eventCardBean);
+									if (isEventCard)
+										eventCardCount++;
+								}
+							}
+						} 
+					}else {
+							log.info(mediaResource + " Resource does not exists");
+						}
+					}
+					if (eventCardCount >= 3) {
+						break;
+					}
+
+				}
+			}
+		}catch(Exception e) {
+		  log.error("Error in retrieving articleList");
+	  }
+  }
+
+public ArrayList<MediaCardsBean> getArticleList() {
+	return articleList;
+}
+
+
+public String getReadMoreLabel() {
+	return readMoreLabel;
+}
+
+
+public String getReadMoreLink() {
+	return readMoreLink;
+}
+
+
+public Resource getMediacards() {
+	return mediacards;
+}	
+public boolean isEventCard() {
+	return isEventCard;
+}
+
+}
+MediaCardsBean.java
+package com.tda.common.models;
+
+
+public class MediaCardsBean {
+	
+	private ArticleModel articleModel;
+	private String resourcePath;
+	
+	public ArticleModel getArticleModel() {
+		return articleModel;
+	}
+	public void setArticleModel(ArticleModel articleModel) {
+		this.articleModel = articleModel;
+	}
+	public String getResourcePath() {
+		return resourcePath;
+	}
+	public void setResourcePath(String resourcePath) {
+		this.resourcePath = resourcePath;
+	}
+
+}
