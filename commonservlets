@@ -1,0 +1,546 @@
+package com.tda.common.servlets;
+
+import java.io.IOException;
+CharacterConverterService.java:
+import javax.jcr.Session;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tda.common.utils.Resource;
+
+@Component(service = Servlet.class, property = { Constants.SERVICE_DESCRIPTION + "= Chinese converter",
+		"sling.servlet.methods=" + HttpConstants.METHOD_GET, "sling.servlet.paths=" + "/bin/chineseConverter",
+		"sling.servlet.extensions=" + "html" })
+
+public class CharacterConverterService extends SlingSafeMethodsServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger log = LoggerFactory.getLogger(CharacterConverterService.class);
+
+	private Session session;
+	private ResourceResolver resourceResolver;
+	
+	@Reference
+	ResourceResolverFactory resolverFactory;
+
+	/**
+	 * Service to converts between simplified and traditional chinese .
+	 * 
+	 * @param request
+	 *            - url with params.
+	 * @param response
+	 *            - response of the service
+	 * @return void
+	 */
+	protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			setResourceResolver();
+			CharacterConverterServiceHelper characterConverterService = new CharacterConverterServiceHelper();
+
+			characterConverterService.setPagePath(request);
+			characterConverterService.setType(request);
+			characterConverterService.setPage(resourceResolver);
+
+			if (characterConverterService.validateRequestParams(response)) {
+				setSession();
+				characterConverterService.converter(getSession(), response);
+			}
+		} catch (Exception e) {
+			log.error("Issue in language converter service " + e);
+		} finally {
+			if (session != null && session.isLive()) {
+				session.logout();
+			}
+			if (resourceResolver != null && resourceResolver.isLive()) {
+				resourceResolver.close();
+			}
+		}
+	}
+
+	/**
+	 * Sets the resource resolver by using tdaWrite sub service.
+	 * 
+	 * @return void
+	 */
+	public void setResourceResolver() {
+		try {
+			this.resourceResolver = Resource.getResourceResolverWithWritePermissions(resolverFactory);
+		} catch (LoginException e) {
+			log.error("Error while getting resourceResolver: " + e);
+		}
+	}
+
+	/**
+	 * Sets the session by adapting to session class.
+	 * 
+	 * @return void
+	 */
+	private void setSession() {
+		this.session = resourceResolver.adaptTo(Session.class);
+	}
+
+	/**
+	 * Returns the session.
+	 * 
+	 * @return session
+	 */
+	private Session getSession() {
+		return this.session;
+	}
+
+}
+CharacterConverterServiceHelper.java:
+package com.tda.common.servlets;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Session;
+import javax.jcr.Value;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.day.cq.wcm.api.Page;
+import com.tda.common.utils.ZHConverter;
+
+public class CharacterConverterServiceHelper {
+	private static final Logger log = LoggerFactory.getLogger(CharacterConverterServiceHelper.class);
+
+	private String pagePath;
+	private Page page;
+	private int type;
+	int singleValueModifiedCount = 0;
+	int multiValueModifiedCount = 0;
+	int totalmodifiedpropertiesCount = 0;
+	boolean isSingleValueModified = false;
+	boolean isMultiValueModified = false;
+
+	private static final String PAGE_PATH = "pagePath";
+	// StringWriter sw = new StringWriter();
+	PrintWriter out;
+
+	/**
+	 * Converts between simplified and traditional chinese and saves the session if
+	 * the properties are modified.
+	 * 
+	 * @param session
+	 *            - session to save once updated with changes values.
+	 * @param response
+	 * @return void
+	 */
+	public void converter(Session session, SlingHttpServletResponse response) {
+
+		try {
+			if (null != getPage()) {
+				out = response.getWriter();
+				Node thisPageNode = getPage().adaptTo(Node.class);
+				converter(thisPageNode, session);
+				if (isSingleValueModified || isMultiValueModified) {
+					totalmodifiedpropertiesCount = singleValueModifiedCount + multiValueModifiedCount;
+					session.save();
+					out.write("Convertion is successful. " + totalmodifiedpropertiesCount + " properties are updated.");
+					log.info(getPage().getName() + " page updated successfully and modified "
+							+ totalmodifiedpropertiesCount + " properties.");
+				} else {
+					out.write("Could not find anything to convert in page " + getPage().getName());
+					log.info("Could not find anything to convert in page " + getPage().getName());
+				}
+			}
+		} catch (Exception e) {
+			log.error("Issue in converter method service " + e);
+		}
+	}
+
+	/**
+	 * Converts between simplified and traditional chinese and saves the session if
+	 * the properties are modified.
+	 * 
+	 * @param thisPageNode
+	 *            - page node
+	 * @param session
+	 *            - session to save once updated with changes values
+	 * @return void
+	 */
+	public void converter(Node thisPageNode, Session session) {
+		try {
+			NodeIterator nodeItr = thisPageNode.getNodes();
+			while (nodeItr.hasNext()) {
+				Node currentNode = nodeItr.nextNode();
+				converter(currentNode, session);
+				if (currentNode.hasProperties()) {
+					PropertyIterator propertyIterator = currentNode.getProperties();
+					while (propertyIterator.hasNext()) {
+						Property property = propertyIterator.nextProperty();
+						if (null != property) {
+							if (!property.getDefinition().isMultiple()) {
+								convertSingleValueProperty(property, currentNode, this.type);
+							} else if (property.getDefinition().isMultiple()) {
+								convertMultiValueProperty(property, currentNode, this.type);
+							}
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			log.error("Issue in converter service " + e);
+		}
+	}
+
+	/**
+	 * Converts between simplified and traditional chinese for multi valued property
+	 * of a node.
+	 * 
+	 * @param currentNode
+	 *            - current node
+	 * @param property
+	 *            - property of the current node
+	 * @param type
+	 *            - either s2T or t2s
+	 * @return void
+	 */
+	public void convertMultiValueProperty(Property property, Node currentNode, int type) {
+		try {
+			Property references = currentNode.getProperty(property.getName());
+			Value[] values;
+			values = references.getValues();
+			List<String> valueList = new ArrayList<String>();
+			for (int i = 0; i < values.length; i++) {
+				String actualValue = values[i].getString();
+				String convertedValue = ZHConverter.convert(values[i].getString(), type);
+				String finalString = (!actualValue.isEmpty()) ? convertedValue : "";
+				if (!actualValue.equalsIgnoreCase(convertedValue)) {
+					setMultiValueModified(true);
+					multiValueModifiedCount++;
+					log.debug("Multi value property converted: " + property.getName());
+				}
+				valueList.add(finalString);
+			}
+			String[] convertedValues = new String[valueList.size()];
+			convertedValues = valueList.toArray(convertedValues);
+			if (isMultiValueModified()) {
+				currentNode.setProperty(property.getName(), convertedValues);
+				log.info("Multivalues converted");
+			}
+		} catch (Exception e) {
+			log.error("Issue in converter service getMultiValueProperty method" + e);
+		}
+	}
+
+	/**
+	 * Converts between simplified and traditional chinese for single value property
+	 * of a node.
+	 * 
+	 * @param currentNode
+	 *            - current node
+	 * @param property
+	 *            - property of the current node
+	 * @param type
+	 *            - either s2T or t2s
+	 * @return void
+	 */
+	public void convertSingleValueProperty(Property property, Node currentNode, int type) {
+		try {
+			String actualValue = property.getString();
+			String convertedValue = ZHConverter.convert(actualValue, type);
+			if (!actualValue.equalsIgnoreCase(convertedValue)) {
+				setSingleValueModified(true);
+				currentNode.setProperty(property.getName(), (!actualValue.isEmpty()) ? convertedValue : "");
+				singleValueModifiedCount++;
+				log.info("converted value from " + actualValue + " to " + convertedValue);
+			}
+		} catch (Exception e) {
+			log.error("Issue in converter service getSingleValueProperty method" + e);
+		}
+	}
+
+	/**
+	 * sets the value of page if its not null and is a valid page.
+	 * 
+	 * @param resource
+	 *            resolver - resource resolver to get the resource
+	 * @return void
+	 */
+	public void setPage(ResourceResolver resourceResolver) {
+
+		if ((this.pagePath != null && this.pagePath.trim().length() > 0)) {
+			try {
+				org.apache.sling.api.resource.Resource resource = resourceResolver.getResource(this.pagePath);
+				if (null != resource) {
+					if (resource.isResourceType("cq:Page")) {
+						this.page = resource.adaptTo(Page.class);
+					}
+				}
+			} catch (Exception e) {
+				log.error("Exception while converting casting resource to a page : " + e);
+			}
+		}
+	}
+
+	/**
+	 * Returns the value of isSingleValueModified.
+	 * 
+	 * @return isSingleValueModified
+	 */
+	public boolean isSingleValueModified() {
+		return isSingleValueModified;
+	}
+
+	/**
+	 * sets the value of isSingleValueModified.
+	 * 
+	 * @param isSingleValueModified
+	 *            - default sets to false
+	 * 
+	 * @return void
+	 */
+	public void setSingleValueModified(boolean isSingleValueModified) {
+		this.isSingleValueModified = isSingleValueModified;
+	}
+
+	/**
+	 * Returns the value of isMultiValueModified.
+	 * 
+	 * @return isMultiValueModified
+	 */
+	public boolean isMultiValueModified() {
+		return isMultiValueModified;
+	}
+
+	/**
+	 * sets the value of isMultiValueModified.
+	 * 
+	 * @param isMultiValueModified
+	 *            - default sets to false
+	 * 
+	 * @return void
+	 */
+	public void setMultiValueModified(boolean isMultiValueModified) {
+		this.isMultiValueModified = isMultiValueModified;
+	}
+
+	/**
+	 * Returns the value of page.
+	 * 
+	 * @return page
+	 */
+	public Page getPage() {
+		return this.page;
+	}
+
+	/**
+	 * sets the value of type to either 1,2 or -1 based on the request param.
+	 * 
+	 * @param request
+	 *            - requested url along with type param.
+	 * 
+	 * @return void
+	 */
+	public void setType(SlingHttpServletRequest request) {
+		type = Integer.parseInt(request.getParameter("type"));
+		this.type = (type == 1 || type == 2) ? type : -1;
+	}
+
+	/**
+	 * returns the value of type to 1,2 or -1.
+	 * 
+	 * 
+	 * @return type
+	 */
+	public int getType() {
+		return this.type;
+	}
+
+	/**
+	 * sets the value of page path based on the request param.
+	 * 
+	 * @param request
+	 *            - requested url along with page param.
+	 * 
+	 * @return void
+	 */
+	public void setPagePath(SlingHttpServletRequest request) {
+		this.pagePath = request.getParameter(PAGE_PATH);
+	}
+
+	/**
+	 * returns the value of page path.
+	 * 
+	 * 
+	 * @return pagePath
+	 */
+	public String getPagePath() {
+		return this.pagePath;
+	}
+
+	/**
+	 * validates both page and type if they are valid.
+	 * 
+	 * @param response
+	 * 
+	 * @return true or false based on validity of both page and type params.
+	 */
+	public boolean validateRequestParams(SlingHttpServletResponse response) {
+
+		if (null == this.page || -1 == type) {
+			try {
+				out = response.getWriter();
+			} catch (Exception e) {
+				log.error("Exception in converter service");
+			}
+			out.write("Character Converter Service terminates here, due to invalid arguments.");
+			log.info("Character Converter Service terminates here, due to invalid arguments.");
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+}
+DropdownModel.java:
+package com.tda.common.servlets;
+
+public class DropdownModel {
+
+	private String text;
+	private String value;
+	public String getText() {
+		return text;
+	}
+	public void setText(String text) {
+		this.text = text;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+}
+DynamicDropdown.java:
+package com.tda.common.servlets;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceMetadata;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.adobe.cq.commerce.common.ValueMapDecorator;
+import com.adobe.granite.ui.components.ds.DataSource;
+import com.adobe.granite.ui.components.ds.SimpleDataSource;
+import com.adobe.granite.ui.components.ds.ValueMapResource;
+@Component(service = Servlet.class,
+ property = {
+  Constants.SERVICE_DESCRIPTION + "=Dynamic Dropdown Servlet",
+  "sling.servlet.methods=" + HttpConstants.METHOD_GET,
+  "sling.servlet.paths=" + "/bin/dynamicdropdown",
+  "sling.servlet.extensions=" + "sample",
+ })
+public class DynamicDropdown extends SlingAllMethodsServlet {
+
+ private static final long serialVersionUID = 1 ;
+ Logger logger = LoggerFactory.getLogger(this.getClass());
+ @Reference
+ ResourceResolverFactory resolverFactory;
+
+	public void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
+			throws ServletException, IOException {
+		logger.info("Dynamic Dropdown Servlets");
+		response.setContentType("text/html");
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put(ResourceResolverFactory.SUBSERVICE, "tdaRead");
+		ResourceResolver resourceResolver = null;
+		try {
+			String requestPath = request.getResource().getPath() + "/datasource";
+			resourceResolver = resolverFactory.getServiceResourceResolver(param);
+			Resource dialogPath = resourceResolver.getResource(requestPath);
+			ValueMap dialogValuemap = dialogPath.getValueMap();
+			String dropDownPagepath = dialogValuemap.get("resourcePath", String.class);
+			Resource resource = resourceResolver.getResource(dropDownPagepath+"/jcr:content/dropdownvalues/itemlists");			
+			if (resource != null) {
+				logger.info("resource path :"+resource.getPath());
+				Node currentNode = resource.adaptTo(Node.class);
+				Map<String, String> map = new LinkedHashMap<String, String>();
+				if (currentNode.hasNodes()) {
+					NodeIterator childNodes = currentNode.getNodes();
+					while (childNodes.hasNext()) {
+						Node property = (Node) childNodes.next();
+						map.put(property.hasProperty("key")?property.getProperty("key").getString():"",property.hasProperty("value") ? property.getProperty("value").getString() : "");
+					}
+				}
+				if (map.size() > 0) {
+					List<Resource> dropdownResourceList = new ArrayList<Resource>();
+					ValueMap vm = null;
+					for (Map.Entry<String, String> entry : map.entrySet()) {
+						vm = new ValueMapDecorator(new HashMap<String, Object>());
+						vm.put("value", entry.getValue());
+						vm.put("text", entry.getKey());
+						if(entry.getValue().equalsIgnoreCase("white") && dropDownPagepath!=null && dropDownPagepath.contains("wps-colors")) {
+							vm.put("selected",true);
+						}
+						dropdownResourceList.add(new ValueMapResource(request.getResourceResolver(), new ResourceMetadata(),
+								"nt:unstructured", vm));
+					}
+					Object ds = new SimpleDataSource(dropdownResourceList.iterator());
+					request.setAttribute(DataSource.class.getName(), ds);
+				}
+			}
+		} catch (Exception e) {
+			logger.info("Exception block:" + e);
+
+		}
+		 finally {
+				if(resourceResolver != null && resourceResolver.isLive()) {
+					resourceResolver.close();
+				}
+			}
+
+	}
+
+}
