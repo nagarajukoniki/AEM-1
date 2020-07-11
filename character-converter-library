@@ -1,0 +1,41 @@
+languageconvert.js:
+(function (document, $) {
+    'use strict';
+    $(document).on("click", ".coral3-Button--secondary", function (e) {
+        var formText = $(this).attr("form");
+		if(formText === 'languagetranslateform'){
+			$(this).attr("disabled",true);
+			var pagePath = $(".coral-Form-fieldwrapper").find('[name="./selectedpage"]').val();
+			var type = $(".coral-Form-fieldwrapper").find('[name="./type"]:checked').val();
+			if (!_.isEmpty(pagePath) && !_.isEmpty(type)) {
+
+				$.ajax({
+					url: "/bin/chineseConverter",
+					type: "GET",
+					async: false,
+					data: { 
+						pagePath:pagePath, type:type
+						
+					},
+				}).done(function( response ) {
+					alert(response);
+
+				}).fail(function( jqxhr, textStatus, error ) {
+					alert("Convertion service encountered error. Please check logs.");
+				});
+            } else {
+				alert("Please provide valid input.");
+            };
+             $(this).removeAttr("disabled");
+		}
+
+    });
+})(document, Granite.$);
+contecx.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:ClientLibraryFolder"
+    categories="[tda.characterconverter]"/>
+    js.txt:
+    #base=js
+languageconverter.js
