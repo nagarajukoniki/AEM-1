@@ -1,0 +1,89 @@
+FAQBean.java:
+package com.tda.common.beans;
+
+public class FAQBean {
+	private String question;
+	private String answer;
+	private String faqOpenValue;
+	public String getQuestion() {
+		return question;
+	}
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+	public String getAnswer() {
+		return answer;
+	}
+	public void setAnswer(String answer) {
+		this.answer = answer;
+	}
+	public String getFaqOpenValue() {
+		return faqOpenValue;
+	}
+	public void setFaqOpenValue(String faqOpenValue) {
+		this.faqOpenValue = faqOpenValue;
+	}
+	
+	
+}
+ImageAlignmentBean.java:
+package com.tda.common.beans;
+
+public class ImageAlignmentBean {
+	private String containerAlignment;
+	private String imageOneAligment;
+	private String imageTwoAligment;
+	private String imageClass;
+	
+	public String getContainerAlignment() {
+		return containerAlignment;
+	}
+	public void setContainerAlignment(String containerAlignment) {
+		this.containerAlignment = containerAlignment;
+	}
+	public String getImageOneAligment() {
+		return imageOneAligment;
+	}
+	public void setImageOneAligment(String imageOneAligment) {
+		this.imageOneAligment = imageOneAligment;
+	}
+	public String getImageTwoAligment() {
+		return imageTwoAligment;
+	}
+	public void setImageTwoAligment(String imageTwoAligment) {
+		this.imageTwoAligment = imageTwoAligment;
+	}
+	public String getImageClass() {
+		return imageClass;
+	}
+	public void setImageClass(String imageClass) {
+		this.imageClass = imageClass;
+	}	
+}
+TextStyleBean.java:
+package com.tda.common.beans;
+
+public class TextStyleBean {
+	private String bold;
+	private String italic;
+	private String underline;
+	
+	public String getBoldStyle() {
+		return bold;
+	}
+	public void setBoldStyle(String bold) {
+		this.bold = bold;
+	}
+	public String getItalicStyle() {
+		return italic;
+	}
+	public void setItalicStyle(String italic) {
+		this.italic = italic;
+	}
+	public String getUnderlineStyle() {
+		return underline;
+	}
+	public void setUnderlineStyle(String underline) {
+		this.underline = underline;
+	}		
+}
