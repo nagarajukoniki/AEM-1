@@ -1,0 +1,23 @@
+tda-dynamic-drop-downs_container.html:
+<div data-sly-resource ="${@path='dropdownvalues', resourceType='/apps/common/components/content/tda_dynamic-drop-down'}" ></div>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:icon="text"
+    jcr:description="Dynamic Dropdown Template"
+    jcr:primaryType="cq:Component"
+    jcr:title="Dynamic Dropdown Template"
+    sling:resourceSuperType="wcm/foundation/components/page"
+    componentGroup=".hidden"/>
+    cq-editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+</jcr:root>
