@@ -1,0 +1,218 @@
+dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Page"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[cq.common.wcm,cq.siteadmin.admin.properties]"
+    mode="edit">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/foundation/container"
+        class="cq-dialog-content-page">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <layout
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/foundation/layouts/tabs"
+                    type="nav"/>
+                <items jcr:primaryType="nt:unstructured">
+                    <featuredarticle
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="General"
+                        sling:resourceType="granite/ui/components/foundation/section">
+                        <layout
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/foundation/layouts/fixedcolumns"
+                            margin="{Boolean}false"/>
+                        <items jcr:primaryType="nt:unstructured">
+                            <column
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <articlepath
+                                        cq:showOnCreate="{Boolean}true"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                        fieldDescription="Article Page Path"
+                                        fieldLabel="Article Page Path"
+                                        name="./articlepath"
+                                        rootPath="/content"/>
+                                    <button
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                        fieldDescription="Button Label"
+                                        fieldLabel="Button Label"
+                                        name="./articlebuttonlabel"/>
+                                </items>
+                            </column>
+                        </items>
+                    </featuredarticle>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>
+context.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="featured article component for displaying article page"
+    jcr:primaryType="cq:Component"
+    jcr:title="Featured Article"
+    componentGroup="common"/>
+    editconfig:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+    <cq:listeners
+        jcr:primaryType="cq:EditListenersConfig"
+        afterdelete="REFRESH_PARENT"
+        afteredit="REFRESH_PAGE"
+        afterinsert="REFRESH_PAGE"/>
+</jcr:root>
+dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Dialog"
+    xtype="dialog">
+    <items
+        jcr:primaryType="cq:Widget"
+        xtype="tabpanel">
+        <items jcr:primaryType="cq:WidgetCollection">
+            <tab1
+                jcr:primaryType="cq:Panel"
+                title="Tab 1"/>
+        </items>
+    </items>
+</jcr:root>
+FeaturedArticle.html:
+<div data-sly-use.featureArticle="com.tda.common.models.FeaturedArticleModel"></div>
+<div data-sly-test="${wcmmode.edit}">
+     <center>Configure Featured Article Component</center> 
+</div>
+<sly data-sly-test="${featureArticle.isValidMedia}">
+<section class="module-container">
+    <div class="featured-article">
+        <p class="featured-article__superscript text-core-green">
+            ${featureArticle.articleModel.category@context='html'}
+        </p>
+        <h2 class="featured-article__title text-black">
+            ${featureArticle.articleModel.head@context='html'}
+        </h2>
+        <div class="main-paragraph featured-article__summary">
+            <p>${featureArticle.articleModel.teaser@context='html'}</p>
+        </div>
+        <sly data-sly-test="${properties.articlebuttonlabel}">
+        <a href="${properties.articlepath @extension = 'html'}" class="btn btn-green-solid"> ${properties.articlebuttonlabel} </a>
+        </sly>
+    </div>
+</section>
+</sly>
+
+model:
+package com.tda.common.models;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.models.annotations.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
+
+@Model(adaptables = { SlingHttpServletRequest.class, Resource.class })
+public class FeaturedArticleModel {
+	private static final Logger log = LoggerFactory.getLogger(FeaturedArticleModel.class);
+	@Inject
+	SlingHttpServletRequest request;
+
+	@Inject
+	private ResourceResolverFactory resolverFactory;
+
+	String mediaPath = null;
+	String resourceType = null;
+	public ArticleModel articleModel;
+	boolean isValidMedia = false;
+
+	@PostConstruct
+	protected void init() {
+		try {
+
+			String resourcePath = request.getRequestPathInfo().getResourcePath();
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put(ResourceResolverFactory.SUBSERVICE, "tdaRead");
+			ResourceResolver resourceResolver = resolverFactory.getServiceResourceResolver(param);
+			setsArticleData(resourceResolver, resourcePath);
+		} catch (Exception e) {
+			log.error("Exception in FeaturedArticleModel:" + e);
+		}
+	}
+
+	public void setsArticleData(ResourceResolver resourceResolver, String resourcePath)
+			throws ValueFormatException, PathNotFoundException, RepositoryException {
+		Node pagePath = null, mediaDetailNode = null;
+		Resource resource;
+		String articleDetailPage=null;
+		Resource articleResource = null;
+		resource = resourceResolver.getResource(resourcePath);
+		pagePath = resource.adaptTo(Node.class);		
+		if (pagePath.hasProperty("articlepath")) {
+			log.debug("media path:" + pagePath.getPath());
+			mediaPath = pagePath.getProperty("articlepath").getString();
+			if (mediaPath != null) {
+				mediaDetailNode = resourceResolver.getResource(mediaPath + "/jcr:content/parsys/media_detail").adaptTo(Node.class);
+				if(mediaDetailNode!=null) {
+					articleDetailPage=mediaDetailNode.hasProperty("pagepath")?mediaDetailNode.getProperty("pagepath").getString():null;
+					articleResource = resourceResolver.getResource(articleDetailPage + "/jcr:content/parsys");
+					log.debug("mediaResource:"+articleResource);
+				if (articleResource != null && !ResourceUtil.isNonExistingResource(articleResource)) {
+					mediaDetailNode = articleResource.adaptTo(Node.class);
+					resourceType = getResourceType(mediaDetailNode);
+					if (resourceType != null && resourceType.equals("ecms-aem/components/content/article-component")) {
+						if (articleResource != null && !ResourceUtil.isNonExistingResource(articleResource)) {
+							log.debug("Before ArticleModel adapting");
+							articleModel = articleResource.adaptTo(ArticleModel.class);
+							isValidMedia = true;
+							log.info("The resource type is valid " + isValidMedia);
+						}
+					}
+				}
+			}else {
+					log.info(articleResource + " Resource does not exists");
+				}
+			}
+		}
+
+	}
+
+	public String getResourceType(Node mediaResourceNode)throws ValueFormatException, PathNotFoundException, RepositoryException {
+		return mediaResourceNode.hasProperty("sling:resourceType")? mediaResourceNode.getProperty("sling:resourceType").getString() : null;
+	}
+
+	public ArticleModel getArticleModel() {
+		return articleModel;
+	}
+
+	public boolean isValidMedia() {
+		return isValidMedia;
+	}
+}
