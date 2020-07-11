@@ -1,0 +1,163 @@
+tdax-dynamic-drop-downs_container.html:
+<div data-sly-resource ="${@path='dropdownvalues', resourceType='/apps/common/components/content/tdax_dynamic-drop-down'}" ></div>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:icon="text"
+    jcr:description="Dynamic Dropdown Template"
+    jcr:primaryType="cq:Component"
+    jcr:title="Dynamic Dropdown Template"
+    sling:resourceSuperType="wcm/foundation/components/page"
+    componentGroup=".hidden"/>
+    editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+</jcr:root>
+tdax_dynamic-drop-downcomponent:<div class="dynamic_dropdown-div">
+   <p class="dynamic_dropdown-p">Create/Update Dropdown List for ${pageProperties.jcr:title}</p>
+
+</div>
+<style>
+	.divider {
+	border : 2px solid #000000;
+    }
+   .dynamic_dropdown-div{
+   margin:0 auto;
+   margin-top:2%;
+   background-color:yellow;
+   line-height:40px;
+   }
+   .dynamic_dropdown-p{
+   font-weight:bold;
+   margin-left:41%;
+   }
+   table {
+   font-family: arial, sans-serif;
+   border-collapse: collapse;
+   width: 100%;
+   }
+   td, th {
+   border: 1px solid #dddddd;
+   text-align: left;
+   padding: 8px;
+   }
+</style>
+ <p data-sly-list.head="${resource.listChildren}">
+<table>
+   <tr>
+      <th>Friendly Name</th>
+      <th>Value</th>
+   </tr>
+   <ul data-sly-list.child="${head.listChildren}">
+      <tr class="divider">
+         <td>${child.appidkey}</td>
+         <td> ${child.appidvalue}</td>
+      </tr>
+      <ul data-sly-list.pageids="${child.listChildren}">
+          <ul data-sly-list.pageid="${pageids.listChildren}">
+             <tr>
+             <td>${pageid.key}</td>
+             <td>${pageid.value}</td>
+          </tr>
+          </ul>
+      </ul> 
+   </ul>
+</table>
+</p>
+cq-dialog.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="App and Page ids"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+        <items jcr:primaryType="nt:unstructured">
+            <column
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/container">
+                <items jcr:primaryType="nt:unstructured">
+                    <appandpageids
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                        composite="{Boolean}true"
+                        fieldDescription="Click 'Add Field' to add a new company."
+                        fieldLabel="App and Page ID's">
+                        <field
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                            name="./appandpageids">
+                            <items jcr:primaryType="nt:unstructured">
+                                <appidkey
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                    fieldLabel="App Id Friendly Name"
+                                    name="./appidkey"/>
+                                <appidvalue
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                    fieldLabel="App Id Value"
+                                    name="./appidvalue"/>
+                                <pageids
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                    composite="{Boolean}true"
+                                    fieldDescription="Click 'Add Field' to add a new department."
+                                    fieldLabel="Page Id's">
+                                    <field
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                                        name="./pageids">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <key
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                fieldLabel="Friendly Name"
+                                                name="./key"/>
+                                            <value
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                fieldLabel="Value"
+                                                name="./value"/>
+                                        </items>
+                                    </field>
+                                </pageids>
+                            </items>
+                        </field>
+                    </appandpageids>
+                </items>
+            </column>
+        </items>
+    </content>
+</jcr:root>
+content.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    cq:icon="text"
+    jcr:description="Dynamic Dropdown Template"
+    jcr:primaryType="cq:Component"
+    jcr:title="Dynamic Dropdown Template"
+    componentGroup=".hidden"/>
+    editconfig.xml:
+    <?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    cq:actions="[edit,insert,delete,copymove,move]"
+    cq:layout="editbar"
+    jcr:primaryType="cq:EditConfig">
+    <cq:actionConfigs jcr:primaryType="nt:unstructured">
+        <insert
+            jcr:primaryType="nt:unstructured"
+            text="Add Component"/>
+    </cq:actionConfigs>
+</jcr:root>
+
+tdax_dynamic-drop-down.html:
