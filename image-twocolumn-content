@@ -273,3 +273,121 @@ cq-editconfig.xml:
         jcr:primaryType="cq:EditListenersConfig"
         afteredit="REFRESH_PAGE"/>
 </jcr:root>
+imagemodel.java;
+package com.tda.common.models;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.apache.sling.api.resource.Resource;
+
+import org.apache.sling.models.annotations.Model;
+
+import org.apache.sling.models.annotations.Optional;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Model(adaptables = Resource.class)
+
+public class ImageTwoColumnModel {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImageTwoColumnModel.class);
+
+	@Inject
+	@Optional
+	public String fileReference;
+
+	@Inject
+	@Optional
+	public String headline;
+
+	@Inject
+	@Optional
+	public String headlinesize;
+
+	@Inject
+	@Optional
+	public String altimgtext;
+
+	@Inject
+	@Optional
+	public String primarybutton;
+
+	@Inject
+	@Optional
+	public String secondarybutton;
+
+	@Inject
+	@Optional
+	public String primarybuttonlink;
+
+	@Inject
+	@Optional
+	public String secondarybuttonlink;
+
+	@Inject
+	@Optional
+	public String bannertext;
+
+	@Inject
+	@Optional
+	public String descriptionalignmenthorizontal;
+
+	@Inject
+	@Optional
+	public String urlnewwindow = "";
+
+	@Inject
+	@Optional
+	public String secbuttonurlnewwindow = "";
+
+	public String getFileReference() {
+		return fileReference;
+	}
+
+	public String getHeadline() {
+		return headline;
+	}
+
+	public String getHeadlinesize() {
+		return headlinesize;
+	}
+
+	public String getAltimgtext() {
+		return altimgtext;
+	}
+
+	public String getPrimarybutton() {
+		return primarybutton;
+	}
+
+	public String getSecondarybutton() {
+		return secondarybutton;
+	}
+
+	public String getPrimarybuttonlink() {
+		return TDACommonUtil.getValidPath(primarybuttonlink);
+	}
+
+	public String getSecondarybuttonlink() {
+		return TDACommonUtil.getValidPath(secondarybuttonlink);
+	}
+
+	public String getPagePathTarget() {
+		return "".equals(urlnewwindow) ? "" : "_blank";
+	}
+
+	public String getSecondaryButtonPagePathTarget() {
+		return "".equals(secbuttonurlnewwindow) ? "" : "_blank";
+	}
+
+	public String getBannertext() {
+		return bannertext;
+	}
+
+	public String getDescriptionAlignmentHorizontal() {
+		return descriptionalignmenthorizontal;
+	}
+
+}
