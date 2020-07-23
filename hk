@@ -1,0 +1,118 @@
+	
+AEM-Web-Configurations/dev/etc/httpd/conf.d/hongkong_vhosts.conf
+<VirtualHost *:8060>
+  ServerName $HOSTNAME
+  <Directory />
+    <IfModule disp_apache2.c>
+        ModMimeUsePathInfo On
+        # enable dispatcher for ALL request. if this is too restrictive,
+        # move it to another location
+        SetHandler dispatcher-handler
+    </IfModule>
+
+    Options FollowSymLinks
+    AllowOverride none
+
+    Require all denied
+        Header always append X-Frame-Options SAMEORIGIN
+   </Directory>
+   RewriteEngine On
+
+   SetEnvIf Request_URI "^/en" LOCALE=en/us
+   SetEnvIf Request_URI "^/zht" LOCALE=hk/zh-hant
+   SetEnvIF Request_URI "^/zhs" LOCALE=cn/zh-hans
+
+   <If "tolower(%{ENV:LOCALE}) in {'hk/zh-hant'}">
+     ErrorDocument 500 /zht/error/server-error.html
+     ErrorDocument 502 /zht/error/service-unavailable.html
+     ErrorDocument 503 /zht/error/service-unavailable.html
+     ErrorDocument 404 /zht/error/page-not-found.html
+   </If>
+   <ElseIf "tolower(%{ENV:LOCALE}) in {'cn/zh-hans'}">
+     ErrorDocument 500 /zhs/error/server-error.html
+     ErrorDocument 502 /zhs/error/service-unavailable.html
+     ErrorDocument 503 /zhs/error/service-unavailable.html
+     ErrorDocument 404 /zhs/error/page-not-found.html
+   </ElseIf>
+   <Else>
+     ErrorDocument 500 /en/error/server-error.html
+     ErrorDocument 502 /en/error/service-unavailable.html
+     ErrorDocument 503 /en/error/service-unavailable.html
+     ErrorDocument 404 /en/error/page-not-found.html
+   </Else>
+
+   RewriteRule ^/robots.txt$ /content/tda/retail/intl/hong-kong/robots.txt [PT]
+  
+   RewriteRule ^/$ /content/tda/retail/intl/hong-kong/en-us.html [PT]
+   RewriteRule ^/en$ /content/tda/retail/intl/hong-kong/en-us.html [PT]
+   RewriteRule ^/zht$ /content/tda/retail/intl/hong-kong/zh-tw.html [PT]
+   RewriteRule ^/zhs$ /content/tda/retail/intl/hong-kong/zh-cn.html [PT]
+   
+   RewriteRule ^/en/sitemap.xml$ /content/tda/retail/intl/hong-kong/en-us.sitemap.xml [PT,L]
+   RewriteRule ^/zht/sitemap.xml$ /content/tda/retail/intl/hong-kong/zh-tw.sitemap.xml [PT,L]
+   RewriteRule ^/zhs/sitemap.xml$ /content/tda/retail/intl/hong-kong/zh-cn.sitemap.xml [PT,L]
+
+   RewriteRule ^/en/(.*)$ /content/tda/retail/intl/hong-kong/en-us/$1 [PT]
+   RewriteRule ^/zht/(.*)$ /content/tda/retail/intl/hong-kong/zh-tw/$1 [PT]
+   RewriteRule ^/zhs/(.*)$ /content/tda/retail/intl/hong-kong/zh-cn/$1 [PT]
+
+   RewriteCond %{REQUEST_URI} !^/apps
+   RewriteCond %{REQUEST_URI} !^/content/
+   RewriteCond %{REQUEST_URI} !^/etc
+   RewriteCond %{REQUEST_URI} !^/libs
+   RewriteCond %{REQUEST_URI} !^/tmp
+   RewriteCond %{REQUEST_URI} !^/var
+   RewriteRule ^/(.*)$ /content/$1 [PT]
+   RewriteRule \.(css|jpe?g|gif|png|js)$ - [L]
+   RewriteRule ^/content/tda/retail/intl/hong-kong/en-us/(.*)$ /en/error/page-not-found.html [R=301,L]
+   RewriteRule ^/content/tda/retail/intl/hong-kong/zh-tw/(.*)$ /zht/error/page-not-found.html [R=301,L]
+   RewriteRule ^/content/tda/retail/intl/hong-kong/zh-cn/(.*)$ /zhs/error/page-not-found.html [R=301,L]
+ </VirtualHost>
+ 
+ 
+ AEM-Web-Configurations/dev/etc/httpd/conf.d/singapore_vhosts.conf
+ <VirtualHost *:8050>
+  ServerName $HOSTNAME
+  <Directory />
+    <IfModule disp_apache2.c>
+        ModMimeUsePathInfo On
+        # enable dispatcher for ALL request. if this is too restrictive,
+        # move it to another location
+        SetHandler dispatcher-handler
+    </IfModule>
+
+    Options FollowSymLinks
+    AllowOverride none
+
+    Require all denied
+        Header always append X-Frame-Options SAMEORIGIN
+   </Directory>
+   RewriteEngine On
+
+   ErrorDocument 500 /error/server-error.html
+   ErrorDocument 502 /error/service-unavailable.html
+   ErrorDocument 503 /error/service-unavailable.html
+   ErrorDocument 404 /error/page-not-found.html
+
+   RewriteRule ^/robots.txt$ /content/tda/retail/intl/singapore/robots.txt [PT]
+
+   RewriteRule ^/$ /content/tda/retail/intl/singapore/en-us.html [PT]
+
+   RewriteRule ^/sitemap.xml$ /content/tda/retail/intl/singapore/en-us.sitemap.xml [PT,L]
+
+   RewriteRule ^/(.*).html?$ /content/tda/retail/intl/singapore/en-us/$1.html [PT,L]
+   
+   RewriteCond %{REQUEST_URI} !^/apps
+   RewriteCond %{REQUEST_URI} !^/conf
+   RewriteCond %{REQUEST_URI} !^/content/
+   RewriteCond %{REQUEST_URI} !^/etc
+   RewriteCond %{REQUEST_URI} !^/home
+   RewriteCond %{REQUEST_URI} !^/system
+   RewriteCond %{REQUEST_URI} !^/libs
+   RewriteCond %{REQUEST_URI} !^/tmp
+   RewriteCond %{REQUEST_URI} !^/var
+   RewriteRule ^/(.*)$ /content/$1 [PT]
+   
+   RewriteRule \.(css|jpe?g|gif|png|js)$ - [L]
+</VirtualHost>
+ 
